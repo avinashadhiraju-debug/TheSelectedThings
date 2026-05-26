@@ -26,26 +26,20 @@ struct ExploreView: View {
                 // 1. Premium Lookbook Search Header
                 VStack(alignment: .leading, spacing: 4) {
                     Text("EXPLORE COLLECTIONS")
-                        .font(.customfont(.bold, fontSize: 13))
+                        .font(.customfont(.bold, fontSize: 22))
                         .foregroundColor(.secondaryText)
                         .tracking(2.5)
                         .padding(.top, .topInsets + 15)
                         .padding(.horizontal, 20)
-                    
-                    HStack {
-                        Text("Search Designs")
-                            .font(.customfont(.bold, fontSize: 32))
-                            .foregroundColor(.primaryText)
-                            .padding(.horizontal, 20)
-                        Spacer()
-                    }
                 }
-                .padding(.bottom, 15)
+                .padding(.bottom, 20)
                 
-                // 2. Search Text Field
-                SearchTextField(placholder: "Find furniture, lighting, audio...", txt: $explorVM.txtSearch)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 20)
+                // 2. Search Button
+                RoundButton(title: "Search Designs...", image: "search") {
+                    // trigger search / show search overlay
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
                 
                 // 3. Category Grid List
                 if explorVM.filteredListArr.isEmpty {

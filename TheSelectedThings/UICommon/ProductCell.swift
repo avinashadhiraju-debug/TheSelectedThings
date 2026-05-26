@@ -12,6 +12,8 @@ struct ProductCell: View {
     var pObj: ProductModel = ProductModel(dict: [:])
     var width: Double = 180.0
     
+    @State private var isPressed = false
+    
     var body: some View {
         NavigationLink {
             ProductDetailView(detailVM: ProductDetailViewModel(prodObj: pObj))
@@ -19,8 +21,8 @@ struct ProductCell: View {
             VStack(alignment: .leading, spacing: 10) {
                 // Image container with glassmorphic backing
                 ZStack {
-                    Color.black.opacity(0.02)
-                        .cornerRadius(12)
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.black.opacity(0.03))
                     
                     WebImage(url: URL(string: pObj.image))
                         .resizable()
@@ -67,20 +69,48 @@ struct ProductCell: View {
             }
             .padding(10)
             .frame(width: width, height: 230)
-            .background(Color.white)
-            .cornerRadius(16)
-            .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.black.opacity(0.05), lineWidth: 1)
+            .background(
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(Color.white.opacity(0.10))
             )
+            .cornerRadius(30)
+            .shadow(color: Color.black.opacity(0.12), radius: 15, x: 0, y: 8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 30)
+                    .stroke(
+                        LinearGradient(
+                            colors: [Color.green.opacity(0.60), Color.clear],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 2.29
+                    )
+            )
+            .scaleEffect(isPressed ? 0.96 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPressed)
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(ProductCellButtonStyle(isPressed: $isPressed))
+    }
+}
+
+// Custom button style to propagate the touch/pressed state smoothly for scale animations
+struct ProductCellButtonStyle: ButtonStyle {
+    @Binding var isPressed: Bool
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .onChange(of: configuration.isPressed) { _, pressed in
+                isPressed = pressed
+            }
     }
 }
 
 struct ProductCell_Previews: PreviewProvider {
     static var previews: some View {
-        ProductCell(pObj: ProductModel.curatedProducts[0])
+        ZStack {
+            Color.gray.opacity(0.2)
+                .ignoresSafeArea()
+            ProductCell(pObj: ProductModel.curatedProducts[0])
+        }
     }
 }

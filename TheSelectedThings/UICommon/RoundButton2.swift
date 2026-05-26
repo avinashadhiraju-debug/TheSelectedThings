@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct GlassButtonStyle: ButtonStyle {
+struct GlassButtonStyle2: ButtonStyle {
     @State private var isHovered = false
     
     func makeBody(configuration: Configuration) -> some View {
@@ -14,7 +14,7 @@ struct GlassButtonStyle: ButtonStyle {
                 Capsule()
                     .stroke(
                         LinearGradient(
-                            colors: [Color.green.opacity(0.60),Color.yellow.opacity(0.60),Color.pink.opacity(0.60), Color.clear],
+                            colors: [Color.white.opacity(0.60), Color.clear],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -31,7 +31,7 @@ struct GlassButtonStyle: ButtonStyle {
     }
 }
 
-struct RoundButton: View {
+struct RoundButton2: View {
     var title: String = "Tap Me"
     var image: String? = nil
     var didTap: (() -> ())?
@@ -56,7 +56,7 @@ struct RoundButton: View {
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
         }
-        .buttonStyle(GlassButtonStyle()) // Applies the custom liquid glass material style directly
+        .buttonStyle(GlassButtonStyle2()) // Applies the custom liquid glass material style directly
     }
 }
 
@@ -65,10 +65,9 @@ struct RoundButton: View {
         Color.black // Dark background to match Figma canvas
             .ignoresSafeArea()
         
-        RoundButton(title: "Get Started") {
+        RoundButton2(title: "Get Started") {
             print("Button tapped")
         }
         .padding()
     }
 }
-

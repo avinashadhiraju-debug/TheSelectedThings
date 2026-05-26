@@ -9,7 +9,6 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct ProductDetailView: View {
-    @Environment(\.presentationMode) var mode: Binding<PresentationMode>
     @StateObject var detailVM: ProductDetailViewModel = ProductDetailViewModel(prodObj: ProductModel(dict: [:]))
     
     var body: some View {
@@ -20,18 +19,10 @@ struct ProductDetailView: View {
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    
-                    // 1. Curved Gradient Image Header
+
                     ZStack(alignment: .bottomLeading) {
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color.black.opacity(0.04), Color.black.opacity(0.01), Color.white]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .frame(width: .screenWidth, height: .screenWidth * 0.9)
-                        .cornerRadius(32, corner: [.bottomLeft, .bottomRight])
-                        .shadow(color: Color.black.opacity(0.01), radius: 10, x: 0, y: 8)
-                        
+
+
                         // Image Carousel (using TabView) or single WebImage
                         Group {
                             if !detailVM.imageArr.isEmpty {
@@ -41,8 +32,9 @@ struct ProductDetailView: View {
                                             .resizable()
                                             .indicator(.activity)
                                             .transition(.fade(duration: 0.5))
-                                            .scaledToFit()
-                                            .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.8)
+                                            .scaledToFill()
+                                            .frame(width: .screenWidth, height: .screenWidth * 4 / 3)
+                                            .clipped()
                                     }
                                 }
                                 .tabViewStyle(.page)
@@ -52,12 +44,12 @@ struct ProductDetailView: View {
                                     .resizable()
                                     .indicator(.activity)
                                     .transition(.fade(duration: 0.5))
-                                    .scaledToFit()
-                                    .frame(width: .screenWidth * 0.8, height: .screenWidth * 0.8)
-                                    .frame(minWidth: 0, maxWidth: .infinity)
+                                    .scaledToFill()
+                                    .frame(width: .screenWidth, height: .screenWidth * 4 / 3)
+                                    .clipped()
                             }
                         }
-                        .frame(width: .screenWidth, height: .screenWidth * 0.8)
+                        .frame(width: .screenWidth, height: .screenWidth * 4 / 3)
                         .padding(.bottom, 20)
                         
                         // Floating Category / Brand Badge
@@ -73,7 +65,7 @@ struct ProductDetailView: View {
                                 .padding(.bottom, 15)
                         }
                     }
-                    .frame(width: .screenWidth, height: .screenWidth * 0.9)
+                    .frame(width: .screenWidth, height: .screenWidth * 4 / 3)
                     
                     // 2. Product Title, Designer & Favorite
                     VStack(alignment: .leading, spacing: 8) {
@@ -209,6 +201,16 @@ struct ProductDetailView: View {
                             RoundedRectangle(cornerRadius: 16)
                                 .stroke(Color.black.opacity(0.06), lineWidth: 1)
                         )
+                        
+                        // Premium Round Button for Official Store (placed directly below Design Story)
+                        if let storeUrl = URL(string: detailVM.pObj.externalURL.isEmpty ? "https://www.apple.com" : detailVM.pObj.externalURL) {
+                            RoundButton(title: "View Official Store") {
+                                let generator = UIImpactFeedbackGenerator(style: .medium)
+                                generator.impactOccurred()
+                                UIApplication.shared.open(storeUrl)
+                            }
+                            .padding(.vertical, 6)
+                        }
                         
                         // Collapsible Product Specifications Card
                         VStack(alignment: .leading, spacing: 0) {
@@ -357,86 +359,71 @@ struct ProductDetailView: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                     
-                    // 5. Sleek "View Store" Call To Action Button (Safari Safe Link)
-                    if let storeUrl = URL(string: detailVM.pObj.externalURL.isEmpty ? "https://www.apple.com" : detailVM.pObj.externalURL) {
-                        Link(destination: storeUrl) {
-                            HStack(spacing: 12) {
-                                Image(systemName: "safari.fill")
-                                    .font(.system(size: 18, weight: .semibold))
-                                Text("View Official Store")
-                                    .font(.customfont(.bold, fontSize: 16))
+                    // 5. "More Like This" Section (Related products in the same category)
+                    let moreLikeThisProducts = ProductModel.curatedProducts.filter { $0.id != detailVM.pObj.id && $0.catName == detailVM.pObj.catName }
+                    let displayMoreLikeThis = moreLikeThisProducts.isEmpty ? ProductModel.curatedProducts.filter { $0.id != detailVM.pObj.id } : moreLikeThisProducts
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("More Like This")
+                            .font(.customfont(.bold, fontSize: 18))
+                            .foregroundColor(.primaryText)
+                            .padding(.horizontal, 20)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 15) {
+                                ForEach(displayMoreLikeThis) { product in
+                                    ProductCell(pObj: product, width: 160)
+                                }
                             }
-                            .foregroundColor(.white)
-                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 56, maxHeight: 56)
-                            .background(Color.primaryText)
-                            .cornerRadius(18)
-                            .shadow(color: Color.black.opacity(0.12), radius: 10, x: 0, y: 6)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 20)
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 15)
-                        .padding(.bottom, .bottomInsets + 35)
-                        .simultaneousGesture(TapGesture().onEnded {
-                            // Haptic Trigger
-                            let generator = UIImpactFeedbackGenerator(style: .heavy)
-                            generator.impactOccurred()
-                        })
                     }
+                    .padding(.top, 15)
+                    
+                    // 6. "Recommendations" Section (Other masterpieces)
+                    let recommendedProducts = ProductModel.curatedProducts.filter { $0.id != detailVM.pObj.id && !displayMoreLikeThis.contains($0) }
+                    let finalRecs = recommendedProducts.isEmpty ? ProductModel.curatedProducts.filter { $0.id != detailVM.pObj.id } : recommendedProducts
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Recommended for You")
+                            .font(.customfont(.bold, fontSize: 18))
+                            .foregroundColor(.primaryText)
+                            .padding(.horizontal, 20)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 15) {
+                                ForEach(finalRecs) { product in
+                                    ProductCell(pObj: product, width: 160)
+                                }
+                            }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 20)
+                        }
+                    }
+                    .padding(.top, 15)
+                    .padding(.bottom, .bottomInsets + 40)
                 }
             }
-            
-            // Glassmorphic Circular Back & Share Floating Headers
-            VStack {
-                HStack {
-                    Button {
-                        mode.wrappedValue.dismiss()
-                    } label: {
-                        Image("back")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .padding(12)
-                            .background(Color.white.opacity(0.9))
-                            .clipShape(Circle())
-                            .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
-                    }
-                    
-                    Spacer()
-                    
-                    Button {
-                        // Share Lookbook Action
-                        if let storeUrl = URL(string: detailVM.pObj.externalURL) {
-                            let av = UIActivityViewController(activityItems: ["Check out this gorgeous curated piece: \(detailVM.pObj.name) by \(detailVM.pObj.designer)", storeUrl], applicationActivities: nil)
-                            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                               let rootVC = windowScene.windows.first?.rootViewController {
-                                rootVC.present(av, animated: true, completion: nil)
-                            }
-                        }
-                    } label: {
-                        Image("share")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .padding(12)
-                            .background(Color.white.opacity(0.9))
-                            .clipShape(Circle())
-                            .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
-                    }
-                }
-                
-                Spacer()
-            }
-            .padding(.top, .topInsets)
-            .padding(.horizontal, 20)
+            .ignoresSafeArea(edges: .top)
         }
         .alert(isPresented: $detailVM.showError) {
             Alert(title: Text(Globs.AppName), message: Text(detailVM.errorMessage), dismissButton: .default(Text("Ok")))
         }
         .navigationTitle("")
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
-        .ignoresSafeArea()
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                ShareLink(
+                    item: URL(string: detailVM.pObj.externalURL.isEmpty ? "https://www.apple.com" : detailVM.pObj.externalURL) ?? URL(string: "https://www.apple.com")!,
+                    subject: Text(detailVM.pObj.name),
+                    message: Text("Check out \(detailVM.pObj.name) by \(detailVM.pObj.designer)")
+                )
+            }
+        }
         .onAppear {
-            // Expand by default for lookbook
             detailVM.isShowDetail = true
         }
     }

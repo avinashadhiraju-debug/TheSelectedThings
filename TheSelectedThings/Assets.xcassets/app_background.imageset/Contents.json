@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "fav_tab.png",
+      "filename" : "grey_hexagons_on_black_background.jpg",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,6 @@
     "version" : 1
   },
   "properties" : {
-    "template-rendering-intent" : "template"
+    "compression-type" : "lossless"
   }
 }

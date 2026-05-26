@@ -15,6 +15,10 @@ struct WelcomeView: View {
     @State private var showMainContent = false
     @State private var showSignIn = false
     
+    private var isInPreview: Bool {
+        ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+    }
+    
     private let greetings = [
         "Hello",       // English
         "Swagatham",     // Telugu
@@ -25,77 +29,91 @@ struct WelcomeView: View {
     ]
     
     var body: some View {
-        ZStack {
-            AuthBackgroundView()
-            
-            // 1. Cinematic Greeting Layer (Centered multilingual introductions)
-            if isIntroRunning {
-                VStack(alignment: .center, spacing: 0) {
-                    Spacer()
-                    
-                    Text(greetings[currentGreetingIndex])
-                        .font(.customfont(.bold, fontSize: 56))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                        .scaleEffect(greetingScale)
-                        .opacity(greetingOpacity)
-                        .blur(radius: (1.0 - greetingOpacity) * 8)
-                        .shadow(color: Color.primaryApp.opacity(0.35), radius: 12, x: 0, y: 0)
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 20)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .transition(.opacity)
-            }
-            
-            // 2. Premium Onboarding Layer (Fully structured, center-aligned, stable layout)
-            if showMainContent {
-                VStack(alignment: .center, spacing: 0) {
-                    Spacer()
-                    
-                    Image("app_logo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 100, height: 100)
-                        .padding(.bottom, 12)
-                    
-                    Text("Selected Things")
-                        .font(.customfont(.semibold, fontSize: 48))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                        .shadow(color: Color.primaryApp.opacity(0.35), radius: 12, x: 0, y: 0)
-                        .padding(.bottom, 15)
-                    
+        NavigationStack {
+            ZStack {
+                AuthBackgroundView()
+                
+                // 1. Cinematic Greeting Layer (Centered multilingual introductions)
+                if isIntroRunning {
                     VStack(alignment: .center, spacing: 0) {
-                        Text("Welcome to Our Crafted Experiences")
-                            .font(.customfont(.medium, fontSize: 20))
-                            .foregroundColor(.white.opacity(0.7))
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.bottom, 30)
+                        Spacer()
                         
-                        RoundButton(title: "Get Started") {
-                            showSignIn = true
-                        }
-                        .navigationDestination(isPresented: $showSignIn) {
-                            SignInView()
-                        }
+                        Text(greetings[currentGreetingIndex])
+                            .font(.customfont(.bold, fontSize: 56))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .scaleEffect(greetingScale)
+                            .animation(nil, value: greetingScale)
+                            .opacity(greetingOpacity)
+                            .animation(nil, value: greetingOpacity)
+                            .blur(radius: (1.0 - greetingOpacity) * 8)
+                            .shadow(color: Color.primaryApp.opacity(0.35), radius: 12, x: 0, y: 0)
+                        
+                        Spacer()
                     }
-                    
-                    Spacer()
+                    .padding(.horizontal, 20)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .transition(.opacity)
                 }
-                .padding(.horizontal, 20)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .transition(.opacity)
+                
+                // 2. Premium Onboarding Layer (Fully structured, center-aligned, stable layout)
+                if showMainContent {
+                    VStack(alignment: .center, spacing: 12) {
+                        Spacer()
+                        
+                        Image("app_logo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 120, height: 120)
+                            .padding(.bottom, 12)
+                        
+                        Text("Selected Things")
+                            .font(.customfont(.semibold, fontSize: 48))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .shadow(color: Color.primaryApp.opacity(0.35), radius: 12, x: 0, y: 0)
+                            .padding(.bottom, 2)
+                        
+                        VStack(alignment: .center, spacing: 16) {
+                            Text("Welcome to Our Crafted Experiences")
+                                .font(.customfont(.medium, fontSize: 20))
+                                .foregroundColor(.white.opacity(0.7))
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.bottom, 30)
+                            
+                            RoundButton(title: "Get Started") {
+                                showSignIn = true
+                            }
+                            .frame(maxWidth: 300, minHeight: 52)
+                            .contentShape(Rectangle())
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.horizontal, 20)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .transition(.opacity)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .navigationTitle("")
+            .navigationBarBackButtonHidden(true)
+            .navigationBarHidden(true)
+            .navigationDestination(isPresented: $showSignIn) {
+                SignInView()
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .navigationTitle("")
-        .navigationBarBackButtonHidden(true)
-        .navigationBarHidden(true)
-        .ignoresSafeArea()
         .onAppear {
+            if isInPreview {
+                // In Xcode previews, avoid intro animations and show final layout
+                self.isIntroRunning = false
+                self.showMainContent = true
+                self.greetingOpacity = 1.0
+                self.greetingScale = 1.0
+                return
+            }
+            
             runIntroAnimation()
             
             // Set native iOS navigation bar styling globally for standard back buttons
@@ -152,7 +170,7 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        NavigationStack {
             WelcomeView()
         }
     }
@@ -165,7 +183,6 @@ struct AuthBackgroundView: View {
         ZStack {
             // Premium solid black base
             Color.black
-                .ignoresSafeArea()
             
             // Slow animated ambient glow blobs matching primary brand design
             ZStack {

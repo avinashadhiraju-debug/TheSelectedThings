@@ -25,7 +25,7 @@ struct SignInView: View {
                         Image("app_logo")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 50, height: 50)
+                            .frame(width: 80, height: 80)
                         Spacer()
                     }
                     .padding(.top, .topInsets + 60)
@@ -37,31 +37,40 @@ struct SignInView: View {
                         .multilineTextAlignment(.leading)
                         .padding(.bottom, .screenWidth * 0.08)
                     
-                    RoundButton(title: "Continue with Email Sign In") {
-                        showLogin = true
+                    HStack(spacing: 20) {
+                        RoundButton(title: "Sign In") {
+                            showLogin = true
+                        }
+                        .frame(maxWidth: .infinity)
+
+                        RoundButton(title: "Sign Up") {
+                            showSignUp = true
+                        }
+                        .frame(maxWidth: .infinity)
                     }
+                    .padding(.bottom, 16)
                     .navigationDestination(isPresented: $showLogin) {
                         LoginView()
-                    }
-                    .padding(.bottom, 8)
-                    
-                    RoundButton(title: "Continue with Email Sign Up") {
-                        showSignUp = true
                     }
                     .navigationDestination(isPresented: $showSignUp) {
                         SignUpView()
                     }
-                    .padding(.bottom, 8)
                     
-                    RoundButton(title: "Browse as Guest") {
+                    Spacer()
+                    
+                    Button {
                         MainViewModel.shared.loginAsGuest()
+                    } label: {
+                        Text("Browse as Guest")
+                            .font(.customfont(.semibold, fontSize: 22))
+                            .foregroundColor(.white.opacity(0.6))
+                            .underline()
+                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
                     }
-                    .padding(.bottom, 8)
+                    .padding(.bottom, 16)
                     
-                    Divider()
-                        .background(Color.white.opacity(0.15))
-                        .padding(.bottom, 25)
-                
+                    Spacer()
+                    
                     Text("Or connect with social media")
                         .font(.customfont(.semibold, fontSize: 14))
                         .foregroundColor(.white.opacity(0.6))
@@ -84,15 +93,16 @@ struct SignInView: View {
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
                         .cornerRadius(30)
                         .blur(radius: 12)
-                        .opacity(0.8)
+                        .opacity(0.6)
                         .offset(y: 4)
                         
-                        RoundButton(title: "Continue with Google", image: "google_logo") {
+                        RoundButton2(title: "Continue with Google", image: "google_logo") {
                             // Google Login Action
                         }
                     }
                     .padding(.bottom, 16)
                     
+                    Spacer()
                     // Facebook Button with brand single-color shadow
                     ZStack {
                         Color(hex: "1877F2") // Facebook Blue
@@ -102,7 +112,7 @@ struct SignInView: View {
                             .opacity(0.6)
                             .offset(y: 4)
                         
-                        RoundButton(title: "Continue with Facebook", image: "fb_logo") {
+                        RoundButton2(title: "Continue with Facebook", image: "facebook_logo") {
                             // Facebook Login Action
                         }
                     }
@@ -125,3 +135,4 @@ struct SignInView_Previews: PreviewProvider {
         }
     }
 }
+

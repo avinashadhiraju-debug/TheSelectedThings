@@ -14,17 +14,14 @@ struct TheSelectedThingsApp: App {
     
     var body: some Scene {
         WindowGroup {
-            
-            NavigationView {
-                
+            Group {
                 if mainVM.isUserLogin {
                     MainTabView()
-                }else{
+                } else {
                     WelcomeView()
                 }
             }
             .preferredColorScheme(mainVM.isDarkMode ? .dark : .light)
-            
         }
     }
 }
