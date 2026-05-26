@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="grad-cart" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#11998E" />
+      <stop offset="50%" stop-color="#38EF7D" />
+      <stop offset="100%" stop-color="#FFD700" />
+    </linearGradient>
+  </defs>
+
+  <g stroke="url(#grad-cart)">
+    <path d="M 18 26 L 52 26 L 46 44 L 24 44 Z" />
+    
+    <path d="M 18 26 C 18 12, 26 12, 35 4 C 44 12, 52 12, 52 26" />
+    
+    <path d="M 35 4 L 35 1" stroke-width="4" />
+    
+    <path d="M 18 26 L 6 26 L 6 14" />
+    
+    <circle cx="28" cy="50" r="6" />
+    <path d="M 28 44 L 28 56 M 22 50 L 34 50" stroke-width="3" />
+    
+    <circle cx="46" cy="50" r="6" />
+    <path d="M 46 44 L 46 56 M 40 50 L 52 50" stroke-width="3" />
+  </g>
+</svg>
