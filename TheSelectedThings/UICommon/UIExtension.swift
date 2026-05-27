@@ -38,19 +38,17 @@ extension CGFloat {
             .flatMap { $0.windows }
             .first { $0.isKeyWindow }
     }
-    
-    static var screenWidth: Double {
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-            return Double(UIScreen.main.bounds.width)
-        }
-        return Double(keyWindow?.bounds.width ?? UIScreen.main.bounds.width)
+
+    private static var currentScreen: UIScreen? {
+        keyWindow?.windowScene?.screen
     }
-    
+
+    static var screenWidth: Double {
+        Double(keyWindow?.bounds.width ?? currentScreen?.bounds.width ?? 390)
+    }
+
     static var screenHeight: Double {
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-            return Double(UIScreen.main.bounds.height)
-        }
-        return Double(keyWindow?.bounds.height ?? UIScreen.main.bounds.height)
+        Double(keyWindow?.bounds.height ?? currentScreen?.bounds.height ?? 844)
     }
     
     static func widthPer(per: Double) -> Double {

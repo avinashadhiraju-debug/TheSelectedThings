@@ -44,10 +44,10 @@ struct ProductCell: View {
     }
 
     private var cellContent: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             imageContainer
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(pObj.brandName.uppercased())
                     .font(.customfont(.bold, fontSize: 10))
                     .foregroundColor(.secondaryText)
@@ -67,13 +67,13 @@ struct ProductCell: View {
                 Text("$\(pObj.price, specifier: "%.2f")")
                     .font(.customfont(.semibold, fontSize: 15))
                     .foregroundColor(.primaryText)
-                    .padding(.top, 4)
             }
-            .padding(.horizontal, 6)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(10)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
         .frame(minWidth: width ?? 0, maxWidth: width ?? .infinity)
+        .aspectRatio(9/16, contentMode: .fit)
         .background(
             RoundedRectangle(cornerRadius: 30)
                 .fill(Color.white.opacity(0.08))

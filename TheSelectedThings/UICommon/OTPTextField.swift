@@ -22,11 +22,10 @@ struct OTPTextField: View {
                     .stroke(isFocused ? Color.primaryApp : (txt.isEmpty ? Color.secondaryText : Color.primaryApp.opacity(0.5)), lineWidth: isFocused ? 2 : 1)
             )
             .keyboardType(.numberPad)
-            .onChange(of: txt) { newValue in
-                if newValue.count > 1 {
-                    txt = String(newValue.prefix(1))
+            .onChange(of: txt) {
+                if txt.count > 1 {
+                    txt = String(txt.prefix(1))
                 }
-                // Filter non-numeric
                 txt = txt.filter { $0.isNumber }
             }
             .scaleEffect(txt.isEmpty ? 1.0 : 1.05)

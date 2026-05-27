@@ -9,8 +9,12 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct HomeView: View {
-    @StateObject var homeVM = HomeViewModel.shared
+    @StateObject private var homeVM: HomeViewModel
     @Environment(\.colorScheme) var colorScheme
+
+    init(homeVM: HomeViewModel = .shared) {
+        _homeVM = StateObject(wrappedValue: homeVM)
+    }
     
     // Namespace for premium category sliding capsule transition
     @Namespace private var categoryNamespace
@@ -50,7 +54,14 @@ struct HomeView: View {
                     // 5. Lookbook Grid Feed
                     gridSection
 
-                    // 6. Footer
+                    // 6. Curated horizontal shelves (All category only)
+                    if homeVM.selectedCategory == "All" {
+                        topPicksSection
+                        mostViewedSection
+                        recentlyAddedSection
+                    }
+
+                    // 7. Footer
                     FooterView()
                 }
                 .padding(.bottom, 100)
@@ -197,6 +208,7 @@ struct HomeView: View {
                 )
                 .scaleEffect(isHeroPressed ? 0.97 : 1.0)
                 .animation(.spring(response: 0.28, dampingFraction: 0.72), value: isHeroPressed)
+                .contentShape(RoundedRectangle(cornerRadius: 20))
                 .padding(.horizontal, 20)
                 .padding(.bottom, 25)
             }
@@ -262,7 +274,76 @@ struct HomeView: View {
         }
     }
     
+    // Horizontal shelf sections
+    @ViewBuilder private var topPicksSection: some View {
+        if !homeVM.listArr.isEmpty {
+            curatedShelf(
+                title: "Top Picks",
+                subtitle: "Editor's selection",
+                products: Array(homeVM.listArr.prefix(6))
+            )
+        }
+    }
 
+    @ViewBuilder private var mostViewedSection: some View {
+        let mid = homeVM.listArr.count / 2
+        if homeVM.listArr.count > 2 {
+            curatedShelf(
+                title: "Most Viewed",
+                subtitle: "Trending right now",
+                products: Array(homeVM.listArr.dropFirst(mid > 0 ? mid - 1 : 0).prefix(6))
+            )
+        }
+    }
+
+    @ViewBuilder private var recentlyAddedSection: some View {
+        if homeVM.listArr.count > 1 {
+            curatedShelf(
+                title: "Recently Added",
+                subtitle: "New arrivals",
+                products: Array(homeVM.listArr.suffix(6).reversed())
+            )
+        }
+    }
+
+    private func curatedShelf(title: String, subtitle: String, products: [ProductModel]) -> some View {
+        let pages: [[ProductModel]] = stride(from: 0, to: products.count, by: 4).map {
+            Array(products[$0..<min($0 + 4, products.count)])
+        }
+        let screenWidth = (UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first?.screen.bounds.width) ?? 390
+        let cellWidth = (screenWidth - 55) / 2
+        let pageHeight = ceil(cellWidth * 16 / 9) * 2 + 15
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .bottom) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.customfont(.bold, fontSize: 18))
+                        .foregroundColor(.primaryText)
+                    Text(subtitle)
+                        .font(.customfont(.medium, fontSize: 12))
+                        .foregroundColor(.secondaryText)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+
+            TabView {
+                ForEach(Array(pages.enumerated()), id: \.offset) { _, page in
+                    LazyVGrid(columns: columns, spacing: 15) {
+                        ForEach(page, id: \.id) { product in
+                            ProductCell(pObj: product)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .automatic))
+            .frame(height: pageHeight + 30)
+        }
+        .padding(.top, 25)
+        .padding(.bottom, 28)
+    }
 
     // Empty results view
     private var emptyStateView: some View {
@@ -333,7 +414,7 @@ private struct CategoryButton: View {
 
 #Preview {
     NavigationStack {
-        HomeView()
+        HomeView(homeVM: .preview)
     }
 }
 

@@ -43,8 +43,16 @@ class HomeViewModel: ObservableObject
         }
     }
     
-    init() {
-        serviceCallList()
+    init(skipServiceCall: Bool = false) {
+        if !skipServiceCall {
+            serviceCallList()
+        }
+    }
+
+    static var preview: HomeViewModel {
+        let vm = HomeViewModel(skipServiceCall: true)
+        vm.loadStaticFallback()
+        return vm
     }
     
     //MARK: ServiceCall
