@@ -17,32 +17,42 @@ struct AccountView: View {
     
     var body: some View {
         ZStack {
-            // Elegant background
-            Color.bgDetail
-                .ignoresSafeArea()
+            Color(hex: "0D0D0D").ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // 1. Premium User Card
                 HStack(spacing: 16) {
-                    // Modern black-and-white curator avatar
+                    // Curator avatar
                     ZStack {
                         Circle()
-                            .fill(Color.primaryText.opacity(0.85))
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.primaryApp.opacity(0.85), Color.primaryApp.opacity(0.55)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .frame(width: 60, height: 60)
                         
-                        Text(String(mainVM.userObj.username.prefix(1)).uppercased())
-                            .font(.customfont(.bold, fontSize: 24))
-                            .foregroundColor(.white)
+                        Image(mainVM.userObj.gender.lowercased() == "male" ? "u2" : "u1")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 60, height: 60)
+                            .clipShape(Circle())
                     }
+                    .shadow(color: Color.primaryApp.opacity(0.6), radius: 8, x: -4, y: -4)
+                    .shadow(color: Color.blue.opacity(0.6), radius: 8, x: -4, y: -4)
+                    .shadow(color: Color.pink.opacity(0.6), radius: 8, x: 4, y: 4)
+                    .shadow(color: Color.brown.opacity(0.6), radius: 8, x: 4, y: 4)
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text(mainVM.userObj.username.isEmpty ? "Guest Curator" : mainVM.userObj.username)
                             .font(.customfont(.bold, fontSize: 20))
-                            .foregroundColor(.primaryText)
+                            .foregroundColor(Color(hex: "F3F3F3"))
                         
                         Text(mainVM.userObj.email.isEmpty ? "curator@selectedthings.com" : mainVM.userObj.email)
                             .font(.customfont(.medium, fontSize: 14))
-                            .foregroundColor(.secondaryText)
+                            .foregroundColor(Color(hex: "AAAAAA"))
                     }
                     
                     Spacer()
@@ -51,8 +61,6 @@ struct AccountView: View {
                 .padding(.top, .topInsets + 15)
                 .padding(.bottom, 20)
                 
-                Divider()
-                
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
                         
@@ -60,37 +68,58 @@ struct AccountView: View {
                         VStack(alignment: .leading, spacing: 0) {
                             Text("APP PREFERENCES")
                                 .font(.customfont(.bold, fontSize: 11))
-                                .foregroundColor(.secondaryText)
+                                .foregroundColor(Color(hex: "AAAAAA"))
                                 .tracking(1.5)
                                 .padding(.horizontal, 16)
                                 .padding(.top, 16)
                                 .padding(.bottom, 10)
                             
-                            // Light / Dark Mode Toggle
-                            HStack {
-                                Image(systemName: mainVM.isDarkMode ? "moon.stars.fill" : "sun.max.fill")
-                                    .foregroundColor(.primaryText)
-                                    .font(.system(size: 18))
-                                    .frame(width: 28)
-                                
-                                Text("Dark Mode")
-                                    .font(.customfont(.semibold, fontSize: 16))
-                                    .foregroundColor(.primaryText)
-                                
-                                Spacer()
-                                
-                                Toggle("", isOn: $mainVM.isDarkMode)
-                                    .labelsHidden()
-                                    .toggleStyle(SwitchToggleStyle(tint: .black))
-                            }
-                            .padding(.vertical, 14)
-                            .padding(.horizontal, 16)
-                            
-                            Divider()
-                                .padding(.horizontal, 16)
-                            
-                            // Collapsible Saved Preferences
                             VStack(alignment: .leading, spacing: 0) {
+                                // My Details row
+                                NavigationLink(destination: MyDetailsView()) {
+                                    HStack {
+                                        Image(systemName: "person.fill")
+                                            .foregroundColor(.primaryApp)
+                                            .font(.system(size: 16))
+                                            .frame(width: 28)
+                                        
+                                        Text("My Details")
+                                            .font(.customfont(.semibold, fontSize: 16))
+                                            .foregroundColor(Color(hex: "F3F3F3"))
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                    }
+                                    .padding(.vertical, 14)
+                                    .padding(.horizontal, 16)
+                                }
+                                
+                                // Notifications row
+                                NavigationLink(destination: NotificationView()) {
+                                    HStack {
+                                        Image(systemName: "bell.fill")
+                                            .foregroundColor(.primaryApp)
+                                            .font(.system(size: 16))
+                                            .frame(width: 28)
+                                        
+                                        Text("Notifications")
+                                            .font(.customfont(.semibold, fontSize: 16))
+                                            .foregroundColor(Color(hex: "F3F3F3"))
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                    }
+                                    .padding(.vertical, 14)
+                                    .padding(.horizontal, 16)
+                                }
+                                
+                                // Saved Preferences collapsible
                                 Button {
                                     withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
                                         showPreferences.toggle()
@@ -98,19 +127,19 @@ struct AccountView: View {
                                 } label: {
                                     HStack {
                                         Image(systemName: "slider.horizontal.3")
-                                            .foregroundColor(.primaryText)
+                                            .foregroundColor(.primaryApp)
                                             .font(.system(size: 18))
                                             .frame(width: 28)
                                         
                                         Text("Saved Preferences")
                                             .font(.customfont(.semibold, fontSize: 16))
-                                            .foregroundColor(.primaryText)
+                                            .foregroundColor(Color(hex: "F3F3F3"))
                                         
                                         Spacer()
                                         
                                         Image(systemName: "chevron.right")
                                             .font(.system(size: 14, weight: .bold))
-                                            .foregroundColor(.secondaryText)
+                                            .foregroundColor(Color(hex: "AAAAAA"))
                                             .rotationEffect(.degrees(showPreferences ? 90 : 0))
                                     }
                                     .padding(.vertical, 14)
@@ -121,13 +150,13 @@ struct AccountView: View {
                                     VStack(alignment: .leading, spacing: 14) {
                                         Toggle("Daily Highlight Digests", isOn: $highlightsEnabled)
                                             .font(.customfont(.medium, fontSize: 14))
-                                            .foregroundColor(.secondaryText)
-                                            .toggleStyle(SwitchToggleStyle(tint: .black))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                            .toggleStyle(SwitchToggleStyle(tint: .primaryApp))
                                         
                                         Toggle("Curator Spotlight Alerts", isOn: $digestsEnabled)
                                             .font(.customfont(.medium, fontSize: 14))
-                                            .foregroundColor(.secondaryText)
-                                            .toggleStyle(SwitchToggleStyle(tint: .black))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                            .toggleStyle(SwitchToggleStyle(tint: .primaryApp))
                                     }
                                     .padding(.horizontal, 20)
                                     .padding(.bottom, 16)
@@ -135,78 +164,76 @@ struct AccountView: View {
                                 }
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardBackground))
-                        .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                        .background(
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(Color.white.opacity(0.02))
                         )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 25)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [Color.primaryApp.opacity(0.60), Color.clear, Color.secondaryprimaryApp.opacity(0.60)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2.29
+                                )
+                        )
+                        .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
                         .padding(.horizontal, 20)
                         
-                        // 3. About the Curators Card
+                        // 3. About the Curators Card — dark glassmorphic
                         VStack(alignment: .leading, spacing: 14) {
-                            Text("ABOUT THE CURATORS")
-                                .font(.customfont(.bold, fontSize: 11))
-                                .foregroundColor(.secondaryText)
-                                .tracking(1.5)
-                            
+                            HStack {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(.primaryApp)
+                                    .font(.system(size: 14, weight: .semibold))
+                                
+                                Text("ABOUT THE CURATORS")
+                                    .font(.customfont(.bold, fontSize: 11))
+                                    .foregroundColor(Color(hex: "AAAAAA"))
+                                    .tracking(1.5)
+                            }
+
                             VStack(alignment: .leading, spacing: 10) {
                                 Text("Our Curation Philosophy")
                                     .font(.customfont(.bold, fontSize: 18))
-                                    .foregroundColor(.primaryText)
-                                
+                                    .foregroundColor(Color(hex: "F3F3F3"))
+
                                 Text("We believe in less, but better. Our dedicated team of architects and curators search the globe to hand-pick pieces that represent extraordinary functional aesthetics, masterful craftsmanship, and beautiful sustainability.")
                                     .font(.customfont(.medium, fontSize: 14))
-                                    .foregroundColor(.secondaryText)
+                                    .foregroundColor(Color(hex: "AAAAAA"))
                                     .lineSpacing(6)
-                                
+
                                 Text("This digital lookbook serves as an open archive of design-forward masterpieces, intended to be appreciated by collectors and enthusiasts who value clean lines, modern geometry, and timeless form.")
                                     .font(.customfont(.medium, fontSize: 14))
-                                    .foregroundColor(.secondaryText)
+                                    .foregroundColor(Color(hex: "AAAAAA"))
                                     .lineSpacing(6)
                             }
-                            .padding(18)
-                            .background(Color.cardBackground)
-                            .cornerRadius(16)
-                            .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Color.black.opacity(0.06), lineWidth: 1)
-                            )
                         }
+                        .padding(20)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 26)
+                                .fill(Color.primaryApp.opacity(0.08))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 25)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [Color.primaryApp.opacity(0.35), Color.white.opacity(0.05)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1
+                                )
+                        )
                         .padding(.horizontal, 20)
                         
                         // 4. Log Out
-                        Button {
-                            // Haptic Trigger
-                            let generator = UIImpactFeedbackGenerator(style: .medium)
-                            generator.impactOccurred()
-                            
+                        RoundButton2(title: "Log Out", image: "rectangle.portrait.and.arrow.right", isAdaptive: false) {
                             mainVM.logout()
-                        } label: {
-                            ZStack {
-                                Text("Log Out")
-                                    .font(.customfont(.bold, fontSize: 16))
-                                    .foregroundColor(.red)
-                                    .multilineTextAlignment(.center)
-                                
-                                HStack {
-                                    Spacer()
-                                    Image(systemName: "rectangle.portrait.and.arrow.right")
-                                        .font(.system(size: 16, weight: .bold))
-                                        .foregroundColor(.red)
-                                        .padding(.trailing, 20)
-                                }
-                            }
                         }
-                        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 56, maxHeight: 56)
-                        .background(Color.cardBackground)
-                        .cornerRadius(16)
-                        .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
-                        )
                         .padding(.horizontal, 20)
                         .padding(.bottom, .bottomInsets + 90)
                     }
@@ -215,13 +242,17 @@ struct AccountView: View {
             }
         }
         .ignoresSafeArea()
+        .preferredColorScheme(.dark)
     }
 }
+
 
 struct AccountView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
             AccountView()
         }
+        .preferredColorScheme(.dark)
+        .previewDisplayName("Dark Mode")
     }
 }

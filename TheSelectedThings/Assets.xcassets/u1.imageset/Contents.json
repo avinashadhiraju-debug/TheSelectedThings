@@ -1,12 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "u1.png",
+      "filename" : "F53F3EAA-8D79-46FE-BA13-C58856B5979F_1_201_a.jpeg",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
+  },
+  "properties" : {
+    "compression-type" : "lossless"
   }
 }
