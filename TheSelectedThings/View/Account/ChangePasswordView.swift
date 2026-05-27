@@ -77,7 +77,7 @@ struct ChangePasswordView: View {
                     .padding(.horizontal, 20)
 
                     // Update button
-                    RoundButton2(title: "Update Password", image: "lock.fill", isAdaptive: false) {
+                    RoundButton(title: "Update Password", image: "lock.fill", isAdaptive: false, useStyle2: true) {
                         myVM.serviceCallChangePassword()
                     }
                     .padding(.horizontal, 20)

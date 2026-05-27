@@ -17,16 +17,7 @@ enum Gilroy: String {
 extension Font {
     
     static func customfont(_ font: Gilroy, fontSize: CGFloat) -> Font {
-        switch font {
-        case .regular:
-            return .system(size: fontSize, weight: .regular)
-        case .medium:
-            return .system(size: fontSize, weight: .medium)
-        case .semibold:
-            return .system(size: fontSize, weight: .semibold)
-        case .bold:
-            return .system(size: fontSize, weight: .bold)
-        }
+        return Font.custom(font.rawValue, size: fontSize)
     }
 }
 
@@ -38,17 +29,49 @@ extension CGFloat {
             .flatMap { $0.windows }
             .first { $0.isKeyWindow }
     }
-
+    
     private static var currentScreen: UIScreen? {
-        keyWindow?.windowScene?.screen
+        #if os(iOS)
+        // Prefer a screen from the key window's scene
+        if let screen = keyWindow?.windowScene?.screen {
+            return screen
+        }
+        // Fallback: use the first connected scene's screen
+        if let screen = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first?.screen {
+            return screen
+        }
+        return nil
+        #else
+        return nil
+        #endif
     }
 
     static var screenWidth: Double {
-        Double(keyWindow?.bounds.width ?? currentScreen?.bounds.width ?? 390)
+        #if os(iOS)
+        if let screen = currentScreen {
+            return Double(screen.bounds.width)
+        } else {
+            // Sensible default for situations without a window (e.g., previews)
+            return 390.0
+        }
+        #else
+        return 390.0
+        #endif
     }
 
     static var screenHeight: Double {
-        Double(keyWindow?.bounds.height ?? currentScreen?.bounds.height ?? 844)
+        #if os(iOS)
+        if let screen = currentScreen {
+            return Double(screen.bounds.height)
+        } else {
+            // Sensible default for situations without a window (e.g., previews)
+            return 844.0
+        }
+        #else
+        return 844.0
+        #endif
     }
     
     static func widthPer(per: Double) -> Double {

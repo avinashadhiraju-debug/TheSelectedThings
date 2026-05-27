@@ -2,7 +2,7 @@
 //  MainTabView.swift
 //  TheSelectedThings
 //
-//  Created by Antigravity on 26/05/26.
+//  crated by Avinash Adhiraju.
 //
 
 import SwiftUI
@@ -16,7 +16,7 @@ enum AppTab: Int {
 
     var title: String {
         switch self {
-        case .discover: return "Discover"
+        case .discover: return "Home"
         case .explore:  return "Explore"
         case .wishlist: return "Wishlist"
         case .profile:  return "Profile"
@@ -40,7 +40,7 @@ struct MainTabView: View {
         // Prevent tab bar from becoming transparent when scroll content underlaps it
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.white
+        appearance.backgroundColor = UIColor.systemBackground
         UITabBar.appearance().standardAppearance = appearance
         if #available(iOS 15.0, *) {
             UITabBar.appearance().scrollEdgeAppearance = appearance
@@ -69,7 +69,7 @@ struct MainTabView: View {
                 .tabItem { tabLabel(for: .profile) }
                 .tag(AppTab.profile.rawValue)
         }
-        .accentColor(.green)
+        .accentColor(.primaryApp)
     }
 
     @ViewBuilder

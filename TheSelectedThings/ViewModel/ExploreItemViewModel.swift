@@ -2,7 +2,7 @@
 //  ExploreItemViewModel.swift
 //  TheSelectedThings
 //
-//  Created by Antigravity on 26/05/26.
+//  crated by Avinash Adhiraju.
 //
 
 import SwiftUI

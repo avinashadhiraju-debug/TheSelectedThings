@@ -36,11 +36,11 @@ struct ExploreCategoryCell: View {
         .padding(15)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.cardBackground)
+                .fill(cObj.color.opacity(0.12))
         )
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(cObj.color.opacity(0.12))
+                .fill(Color.cardBackground)
         )
         .overlay (
             RoundedRectangle(cornerRadius: 16)

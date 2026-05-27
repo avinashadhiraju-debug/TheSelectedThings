@@ -19,13 +19,12 @@ struct SearchTextField: View {
                 .renderingMode(.template)
                 .scaledToFit()
                 .frame(width: 20, height: 20)
-                .foregroundColor(.secondaryText)
            
             TextField(text: $txt) {
                 Text(placholder)
                     .foregroundColor(.placeholder)
             }
-                .font(.customfont(.regular, fontSize: 17))
+                .font(.customfont(.regular, fontSize: 18))
                 .foregroundColor(.primaryText)
                 .tint(.primaryText)
                 .autocapitalization(.none)
@@ -39,17 +38,16 @@ struct SearchTextField: View {
                 .fill(colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.04))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 30)
                 .stroke(
                     LinearGradient(
-                        colors: [Color.primaryText.opacity(colorScheme == .dark ? 0.3 : 0.08), Color.clear],
+                        colors: [Color.primaryApp.opacity(colorScheme == .dark ? 0.3 : 0.8), Color.clear,Color.secondaryprimaryApp.opacity(colorScheme == .dark ? 0.3 : 0.8)],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
-                    lineWidth: 1
+                    lineWidth: 3
                 )
         )
-        .shadow(color: Color.black.opacity(0.02), radius: 8, x: 0, y: 4)
     }
 }
 

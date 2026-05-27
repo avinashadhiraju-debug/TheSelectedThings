@@ -29,6 +29,17 @@ struct NotificationModel: Identifiable, Equatable {
         self.createdDate = (dict.value(forKey: "created_date") as? String ?? "").stringDateToDate() ?? Date()
     }
     
+    // Memberwise initializer for creating local sample data
+    init(id: Int, refId: Int, isRead: Int, notificationType: Int, title: String, message: String, createdDate: Date) {
+        self.id = id
+        self.refId = refId
+        self.isRead = isRead
+        self.notificationType = notificationType
+        self.title = title
+        self.message = message
+        self.createdDate = createdDate
+    }
+    
     static func == (lhs: NotificationModel, rhs: NotificationModel) -> Bool {
         return lhs.id == rhs.id
     }

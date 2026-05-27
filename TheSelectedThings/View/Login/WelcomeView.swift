@@ -123,41 +123,8 @@ struct WelcomeView: View {
                 removal: .opacity.combined(with: .move(edge: .leading))
             ))
             
-            // Custom Premium Back Button
-            if !router.path.isEmpty {
-                VStack {
-                    HStack {
-                        Button {
-                            router.navigateBack()
-                        } label: {
-                            Image(systemName: "chevron.left")
-                                .font(.title3.bold())
-                                .foregroundColor(.white)
-                                .padding(12)
-                                .background(Color.white.opacity(0.15))
-                                .clipShape(Circle())
-                                .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
-                        }
-                        .padding(.leading, 20)
-                        .padding(.top, .topInsets + 8)
-                        
-                        Spacer()
-                    }
-                    Spacer()
-                }
-                .ignoresSafeArea()
-                .transition(.opacity)
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .gesture(
-            DragGesture(minimumDistance: 15, coordinateSpace: .local)
-                .onEnded { value in
-                    if value.translation.width > 80 && value.startLocation.x < 50 {
-                        router.navigateBack()
-                    }
-                }
-        )
         .onAppear {
             if isInPreview {
                 // In Xcode previews, avoid intro animations and show final layout

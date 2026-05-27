@@ -13,16 +13,26 @@ class ServiceCall {
     class func post(parameter: NSDictionary, path: String, isToken: Bool = false, withSuccess: @escaping ( (_ responseObj: AnyObject?) -> () ), failure: @escaping ( (_ error: Error?) -> () ) ) {
         
         let plusEncoded = CharacterSet.urlQueryAllowed.subtracting(.init(charactersIn: "+"))
-        let bodyString = (parameter.allKeys as! [String]).map { key -> String in
-            let raw = "\(parameter.value(forKey: key)!)"
+        
+        let keys = parameter.allKeys.compactMap { $0 as? String }
+        let bodyParts = keys.compactMap { key -> String? in
+            guard let val = parameter.value(forKey: key) else { return nil }
+            let raw = "\(val)"
             let encoded = raw.addingPercentEncoding(withAllowedCharacters: plusEncoded) ?? raw
             return "\(key)=\(encoded)"
-        }.joined(separator: "&")
+        }
+        let bodyString = bodyParts.joined(separator: "&")
         let parameterData = bodyString.data(using: .utf8) ?? Data()
         
-        var request = URLRequest(url: URL(string: path)!,timeoutInterval: 20)
+        guard let url = URL(string: path) else {
+            DispatchQueue.main.async {
+                failure(NSError(domain: "ServiceCall", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL path: \(path)"]))
+            }
+            return
+        }
+        
+        var request = URLRequest(url: url, timeoutInterval: 30)
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 30
 
         if(isToken) {
             let userDict = Utils.UDValue(key: Globs.userPayload) as? NSDictionary ?? [:]

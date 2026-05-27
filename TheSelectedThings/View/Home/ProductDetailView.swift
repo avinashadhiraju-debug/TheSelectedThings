@@ -2,7 +2,7 @@
 //  ProductDetailView.swift
 //  TheSelectedThings
 //
-//  Created by Antigravity on 26/05/26.
+//  crated by Avinash Adhiraju.
 //
 
 import SwiftUI
@@ -70,14 +70,16 @@ struct ProductDetailView: View {
                                     detailVM.serviceCallAddRemoveFav()
                                 }
                             } label: {
-                                Image(detailVM.isFav ? "favorite" : "fav")
+                                Image("favorate")
+                                    .renderingMode(.template)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 26, height: 26)
+                                    .foregroundColor(detailVM.isFav ? .red : .primaryApp.opacity(0.9))
+                                    .frame(width: 24, height: 24)
                                     .padding(12)
                                     .background(
                                         Circle()
-                                            .fill(detailVM.isFav ? Color.primaryText.opacity(0.08) : Color.black.opacity(0.03))
+                                            .fill(detailVM.isFav ? Color.red.opacity(0.12) : Color.black.opacity(0.03))
                                     )
                             }
                         }
@@ -166,11 +168,11 @@ struct ProductDetailView: View {
                                     .transition(.opacity.combined(with: .move(edge: .top)))
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardBackground))
+                        .background(RoundedRectangle(cornerRadius: 30).fill(Color.cardBackground))
                         .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.primaryText.opacity(0.06), lineWidth: 1)
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(Color.primaryApp.opacity(0.2), lineWidth: 2)
                         )
                         
                         let cleanName = detailVM.pObj.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
@@ -186,7 +188,7 @@ struct ProductDetailView: View {
                             }
                             
                             if let momaUrl = URL(string: "https://store.moma.org/search?q=\(cleanName)") {
-                                RoundButton(title: "MoMA Store", image: "museum.fill") {
+                                RoundButton(title: "Amazon", image: "amazon_logo") {
                                     let generator = UIImpactFeedbackGenerator(style: .medium)
                                     generator.impactOccurred()
                                     UIApplication.shared.open(momaUrl)
@@ -194,7 +196,7 @@ struct ProductDetailView: View {
                             }
                             
                             if let archiproductsUrl = URL(string: "https://www.archiproducts.com/en/search?q=\(cleanBrand)%20\(cleanName)") {
-                                RoundButton(title: "Archiproducts", image: "square.grid.3x3.fill") {
+                                RoundButton(title: "Ebay", image: "ebay_logo") {
                                     let generator = UIImpactFeedbackGenerator(style: .medium)
                                     generator.impactOccurred()
                                     UIApplication.shared.open(archiproductsUrl)
@@ -202,7 +204,7 @@ struct ProductDetailView: View {
                             }
                             
                             if let dwrUrl = URL(string: "https://www.dwr.com/search?q=\(cleanName)") {
-                                RoundButton(title: "DWR Store", image: "couch.fill") {
+                                RoundButton(title: "BestBuy", image: "BestBuy_logo") {
                                     let generator = UIImpactFeedbackGenerator(style: .medium)
                                     generator.impactOccurred()
                                     UIApplication.shared.open(dwrUrl)
@@ -267,11 +269,11 @@ struct ProductDetailView: View {
                                 .transition(.opacity.combined(with: .move(edge: .top)))
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardBackground))
+                        .background(RoundedRectangle(cornerRadius: 30).fill(Color.cardBackground))
                         .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.primaryText.opacity(0.06), lineWidth: 1)
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(Color.primaryApp.opacity(0.2), lineWidth: 2)
                         )
                         
                         // 4. Community Reviews & Ratings Section (Expanded & Embedded beautifully)
@@ -287,6 +289,32 @@ struct ProductDetailView: View {
                                     .foregroundColor(.primaryText)
                                 
                                 Spacer()
+                                
+                                NavigationLink {
+                                    WriteReviewView { newReview in
+                                        var currentReviews = detailVM.pObj.reviews
+                                        if currentReviews.isEmpty {
+                                            currentReviews = [
+                                                ReviewModel(userName: "Jane K.", rating: 5, date: "May 25, 2026", comment: "Breathtaking design and stellar build quality. A true work of art!"),
+                                                ReviewModel(userName: "Oliver S.", rating: 5, date: "May 19, 2026", comment: "Extremely minimal aesthetic. A perfect showcase of form meeting function.")
+                                            ]
+                                        }
+                                        currentReviews.append(newReview)
+                                        detailVM.pObj.reviews = currentReviews
+                                        
+                                        // Recalculate average rating
+                                        let totalRating = currentReviews.map { $0.rating }.reduce(0, +)
+                                        detailVM.pObj.avgRating = Int(round(Double(totalRating) / Double(currentReviews.count)))
+                                    }
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "square.and.pencil")
+                                            .font(.system(size: 13, weight: .bold))
+                                        Text("Write Review")
+                                            .font(.customfont(.bold, fontSize: 12))
+                                    }
+                                    .foregroundColor(.primaryApp)
+                                }
                             }
                             .padding(.top, 16)
                             .padding(.horizontal, 16)
@@ -348,11 +376,11 @@ struct ProductDetailView: View {
                                 }
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardBackground))
+                        .background(RoundedRectangle(cornerRadius: 30).fill(Color.cardBackground))
                         .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.primaryText.opacity(0.06), lineWidth: 1)
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(Color.primaryText.opacity(0.2), lineWidth: 2)
                         )
                     }
                     .padding(.horizontal, 20)
@@ -362,21 +390,23 @@ struct ProductDetailView: View {
                     let moreLikeThisProducts = ProductModel.curatedProducts.filter { $0.id != detailVM.pObj.id && $0.catName == detailVM.pObj.catName }
                     let displayMoreLikeThis = moreLikeThisProducts.isEmpty ? ProductModel.curatedProducts.filter { $0.id != detailVM.pObj.id } : moreLikeThisProducts
                     
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 15) {
                         Text("More Like This")
                             .font(.customfont(.bold, fontSize: 18))
                             .foregroundColor(.primaryText)
                             .padding(.horizontal, 20)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 15) {
-                                ForEach(displayMoreLikeThis) { product in
-                                    ProductCell(pObj: product, width: 160)
-                                }
+                        let gridItems = [
+                            GridItem(.flexible(), spacing: 15),
+                            GridItem(.flexible(), spacing: 15)
+                        ]
+                        
+                        LazyVGrid(columns: gridItems, spacing: 15) {
+                            ForEach(displayMoreLikeThis.prefix(4)) { product in
+                                productCell(product: product)
                             }
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 20)
                         }
+                        .padding(.horizontal, 20)
                     }
                     .padding(.top, 15)
                     
@@ -384,21 +414,23 @@ struct ProductDetailView: View {
                     let recommendedProducts = ProductModel.curatedProducts.filter { $0.id != detailVM.pObj.id && !displayMoreLikeThis.contains($0) }
                     let finalRecs = recommendedProducts.isEmpty ? ProductModel.curatedProducts.filter { $0.id != detailVM.pObj.id } : recommendedProducts
                     
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 15) {
                         Text("Recommended for You")
                             .font(.customfont(.bold, fontSize: 18))
                             .foregroundColor(.primaryText)
                             .padding(.horizontal, 20)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 15) {
-                                ForEach(finalRecs) { product in
-                                    ProductCell(pObj: product, width: 160)
-                                }
+                        let gridItems = [
+                            GridItem(.flexible(), spacing: 15),
+                            GridItem(.flexible(), spacing: 15)
+                        ]
+                        
+                        LazyVGrid(columns: gridItems, spacing: 15) {
+                            ForEach(finalRecs.prefix(4)) { product in
+                                productCell(product: product)
                             }
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 20)
                         }
+                        .padding(.horizontal, 20)
                     }
                     .padding(.top, 15)
                     
@@ -463,6 +495,11 @@ struct ProductDetailView: View {
             }
         }
         .frame(width: imageSize, height: imageHeight)
+    }
+
+    @ViewBuilder
+    private func productCell(product: ProductModel, width: CGFloat? = nil) -> some View {
+        ProductCell(pObj: product, width: width)
     }
 }
 

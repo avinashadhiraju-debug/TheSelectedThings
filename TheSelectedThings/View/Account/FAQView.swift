@@ -2,7 +2,7 @@
 //  FAQView.swift
 //  TheSelectedThings
 //
-//  Created by Antigravity on 26/05/26.
+//  crated by Avinash Adhiraju.
 //
 
 import SwiftUI
@@ -257,8 +257,6 @@ struct FAQView: View {
                 }
             }
         }
-        .navigationTitle("FAQ")
-        .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Color(hex: "0D0D0D"), for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .preferredColorScheme(.dark)

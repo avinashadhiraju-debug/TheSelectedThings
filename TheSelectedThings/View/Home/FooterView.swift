@@ -1,3 +1,10 @@
+//
+//  FooterView.swift
+//  TheSelectedThings
+//
+//  crated by Avinash Adhiraju.
+//
+
 import SwiftUI
 
 struct FooterView: View {

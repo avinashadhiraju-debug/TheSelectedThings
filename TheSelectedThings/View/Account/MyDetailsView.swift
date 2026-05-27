@@ -98,7 +98,7 @@ struct MyDetailsView: View {
                     .padding(.horizontal, 20)
 
                     // Update button
-                    RoundButton2(title: "Update Profile", image: "checkmark.circle.fill", isAdaptive: false) {
+                    RoundButton(title: "Update Profile", image: "checkmark.circle.fill", isAdaptive: false, useStyle2: true) {
                         myVM.serviceCallUpdate()
                     }
                     .padding(.horizontal, 20)

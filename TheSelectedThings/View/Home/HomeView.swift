@@ -2,7 +2,7 @@
 //  HomeView.swift
 //  TheSelectedThings
 //
-//  Created by Antigravity on 26/05/26.
+//  crated by Avinash Adhiraju.
 //
 
 import SwiftUI
@@ -21,6 +21,9 @@ struct HomeView: View {
     
     // State to drive hero card pressed animation
     @State private var isHeroPressed = false
+    
+    // State to track if browse collection grid is expanded
+    @State private var isExpanded = false
     
     // Adaptive 2-column grid layout for lookbook cards
     private let columns = [
@@ -75,6 +78,9 @@ struct HomeView: View {
         .navigationBarHidden(true)
         // FIX: Only ignore the top safe area so the ScrollView doesn't bleed off the bottom
         .ignoresSafeArea(.container, edges: .top)
+        .onChange(of: homeVM.selectedCategory) { _, _ in
+            isExpanded = false
+        }
     }
     
     // MARK: - Subviews
@@ -243,7 +249,9 @@ struct HomeView: View {
     
     // 5. Grid section
     private var gridSection: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        let displayList = isExpanded ? homeVM.filteredListArr : Array(homeVM.filteredListArr.prefix(4))
+        
+        return VStack(alignment: .leading, spacing: 15) {
             HStack {
                 Text(homeVM.selectedCategory == "All" ? "Selected Masterpieces" : "\(homeVM.selectedCategory) Collection")
                     .font(.customfont(.bold, fontSize: 18))
@@ -262,13 +270,44 @@ struct HomeView: View {
             if homeVM.filteredListArr.isEmpty {
                 emptyStateView
             } else {
-                LazyVGrid(columns: columns, spacing: 15) {
-                    ForEach(homeVM.filteredListArr, id: \.id) { product in
-                        ProductCell(pObj: product)
+                VStack(spacing: 20) {
+                    LazyVGrid(columns: columns, spacing: 15) {
+                        ForEach(displayList, id: \.id) { product in
+                            ProductCell(pObj: product)
+                        }
+                    }
+                    .id(homeVM.selectedCategory)
+                    .transition(.opacity)
+                    
+                    if homeVM.filteredListArr.count > 4 {
+                        Button(action: {
+                            withAnimation(.spring(response: 0.38, dampingFraction: 0.8)) {
+                                isExpanded.toggle()
+                            }
+                        }) {
+                            HStack(spacing: 8) {
+                                Text(isExpanded ? "View Less" : "View More")
+                                    .font(.customfont(.bold, fontSize: 13))
+                                    .tracking(1.0)
+                                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                                    .font(.system(size: 11, weight: .bold))
+                            }
+                            .foregroundColor(.primaryText)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(
+                                Capsule()
+                                    .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.04))
+                            )
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color.primaryText.opacity(0.12), lineWidth: 1)
+                            )
+                        }
+                        .padding(.top, 5)
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
-                .id(homeVM.selectedCategory)
-                .transition(.opacity)
                 .padding(.horizontal, 20)
             }
         }
@@ -341,8 +380,8 @@ struct HomeView: View {
             .tabViewStyle(.page(indexDisplayMode: .automatic))
             .frame(height: pageHeight + 30)
         }
-        .padding(.top, 25)
-        .padding(.bottom, 28)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
     }
 
     // Empty results view

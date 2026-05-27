@@ -88,7 +88,7 @@ struct SignInView: View {
                         .opacity(0.6)
                         .offset(y: 4)
                         
-                        RoundButton2(title: "Continue with Google", image: "google_logo", isAdaptive: false) {
+                        RoundButton(title: "Continue with Google", image: "google_logo", isAdaptive: false, useStyle2: true, renderingMode: .original) {
                             // Google Login Action
                         }
                     }
@@ -104,7 +104,7 @@ struct SignInView: View {
                             .opacity(0.6)
                             .offset(y: 4)
                         
-                        RoundButton2(title: "Continue with Facebook", image: "facebook_logo", isAdaptive: false) {
+                        RoundButton(title: "Continue with Facebook", image: "facebook_logo", isAdaptive: false, useStyle2: true, renderingMode: .original) {
                             // Facebook Login Action
                         }
                     }

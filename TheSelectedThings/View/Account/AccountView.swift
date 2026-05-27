@@ -2,7 +2,7 @@
 //  AccountView.swift
 //  TheSelectedThings
 //
-//  Created by Antigravity on 26/05/26.
+//  crated by Avinash Adhiraju.
 //
 
 import SwiftUI
@@ -387,7 +387,7 @@ struct AccountView: View {
                         .padding(.horizontal, 20)
                         
                         // 4. Log Out
-                        RoundButton2(title: "Log Out", image: "rectangle.portrait.and.arrow.right", isAdaptive: false) {
+                        RoundButton(title: "Log Out", image: "rectangle.portrait.and.arrow.right", isAdaptive: false, useStyle2: true) {
                             mainVM.logout()
                         }
                         .padding(.horizontal, 20)

@@ -40,16 +40,28 @@ struct OTPView: View {
                         Button {
                             forgotVM.serviceCallVerify()
                         } label: {
-                            Image("next")
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 20, height: 20)
-                                .foregroundColor(.white)
-                                .padding(15)
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundColor(.primaryApp)
+                                .padding(16)
+                                .background(
+                                    Circle()
+                                        .fill(Color.white.opacity(0.08))
+                                )
+                                .overlay(
+                                    Circle()
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [Color.primaryApp.opacity(0.60), Color.clear, Color.secondaryprimaryApp.opacity(0.60)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 2.29
+                                        )
+                                )
+                                .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
                         }
-                        .background(Color.primaryApp)
-                        .cornerRadius(30)
+                        .buttonStyle(OTPNextButtonStyle())
                     }
                 }
                 .padding(.horizontal, 20)
@@ -68,5 +80,19 @@ struct OTPView: View {
 struct OTPView_Previews: PreviewProvider {
     static var previews: some View {
         OTPView()
+    }
+}
+
+struct OTPNextButtonStyle: ButtonStyle {
+    @State private var isHovered = false
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : (isHovered ? 1.05 : 1.0))
+            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
+            .animation(.easeInOut(duration: 0.2), value: isHovered)
+            .onHover { hovering in
+                isHovered = hovering
+            }
     }
 }
