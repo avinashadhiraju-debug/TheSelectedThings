@@ -14,44 +14,15 @@ struct ProductDetailView: View {
     var body: some View {
         ZStack {
             // Main Background Color to match modern light themes
-            Color.white
+            Color.bgDetail
                 .ignoresSafeArea()
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
 
                     ZStack(alignment: .bottomLeading) {
+                        imageCarousel
 
-
-                        // Image Carousel (using TabView) or single WebImage
-                        Group {
-                            if !detailVM.imageArr.isEmpty {
-                                TabView {
-                                    ForEach(detailVM.imageArr, id: \.id) { imgObj in
-                                        WebImage(url: URL(string: imgObj.image))
-                                            .resizable()
-                                            .indicator(.activity)
-                                            .transition(.fade(duration: 0.5))
-                                            .scaledToFill()
-                                            .frame(width: .screenWidth, height: .screenWidth * 4 / 3)
-                                            .clipped()
-                                    }
-                                }
-                                .tabViewStyle(.page)
-                                .indexViewStyle(.page(backgroundDisplayMode: .always))
-                            } else {
-                                WebImage(url: URL(string: detailVM.pObj.image))
-                                    .resizable()
-                                    .indicator(.activity)
-                                    .transition(.fade(duration: 0.5))
-                                    .scaledToFill()
-                                    .frame(width: .screenWidth, height: .screenWidth * 4 / 3)
-                                    .clipped()
-                            }
-                        }
-                        .frame(width: .screenWidth, height: .screenWidth * 4 / 3)
-                        .padding(.bottom, 20)
-                        
                         // Floating Category / Brand Badge
                         if !detailVM.pObj.catName.isEmpty {
                             Text(detailVM.pObj.catName.uppercased())
@@ -195,22 +166,50 @@ struct ProductDetailView: View {
                                     .transition(.opacity.combined(with: .move(edge: .top)))
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.white))
+                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardBackground))
                         .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                                .stroke(Color.primaryText.opacity(0.06), lineWidth: 1)
                         )
                         
-                        // Premium Round Button for Official Store (placed directly below Design Story)
-                        if let storeUrl = URL(string: detailVM.pObj.externalURL.isEmpty ? "https://www.apple.com" : detailVM.pObj.externalURL) {
-                            RoundButton(title: "View Official Store") {
-                                let generator = UIImpactFeedbackGenerator(style: .medium)
-                                generator.impactOccurred()
-                                UIApplication.shared.open(storeUrl)
+                        let cleanName = detailVM.pObj.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                        let cleanBrand = detailVM.pObj.brandName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                        
+                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+                            if let storeUrl = URL(string: detailVM.pObj.externalURL.isEmpty ? "https://www.apple.com" : detailVM.pObj.externalURL) {
+                                RoundButton(title: "Official Store", image: "safari") {
+                                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                                    generator.impactOccurred()
+                                    UIApplication.shared.open(storeUrl)
+                                }
                             }
-                            .padding(.vertical, 6)
+                            
+                            if let momaUrl = URL(string: "https://store.moma.org/search?q=\(cleanName)") {
+                                RoundButton(title: "MoMA Store", image: "museum.fill") {
+                                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                                    generator.impactOccurred()
+                                    UIApplication.shared.open(momaUrl)
+                                }
+                            }
+                            
+                            if let archiproductsUrl = URL(string: "https://www.archiproducts.com/en/search?q=\(cleanBrand)%20\(cleanName)") {
+                                RoundButton(title: "Archiproducts", image: "square.grid.3x3.fill") {
+                                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                                    generator.impactOccurred()
+                                    UIApplication.shared.open(archiproductsUrl)
+                                }
+                            }
+                            
+                            if let dwrUrl = URL(string: "https://www.dwr.com/search?q=\(cleanName)") {
+                                RoundButton(title: "DWR Store", image: "couch.fill") {
+                                    let generator = UIImpactFeedbackGenerator(style: .medium)
+                                    generator.impactOccurred()
+                                    UIApplication.shared.open(dwrUrl)
+                                }
+                            }
                         }
+                        .padding(.vertical, 6)
                         
                         // Collapsible Product Specifications Card
                         VStack(alignment: .leading, spacing: 0) {
@@ -268,11 +267,11 @@ struct ProductDetailView: View {
                                 .transition(.opacity.combined(with: .move(edge: .top)))
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.white))
+                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardBackground))
                         .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                                .stroke(Color.primaryText.opacity(0.06), lineWidth: 1)
                         )
                         
                         // 4. Community Reviews & Ratings Section (Expanded & Embedded beautifully)
@@ -349,11 +348,11 @@ struct ProductDetailView: View {
                                 }
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.white))
+                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardBackground))
                         .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.black.opacity(0.06), lineWidth: 1)
+                                .stroke(Color.primaryText.opacity(0.06), lineWidth: 1)
                         )
                     }
                     .padding(.horizontal, 20)
@@ -402,7 +401,9 @@ struct ProductDetailView: View {
                         }
                     }
                     .padding(.top, 15)
-                    .padding(.bottom, .bottomInsets + 40)
+                    
+                    FooterView()
+                        .padding(.bottom, .bottomInsets + 20)
                 }
             }
             .ignoresSafeArea(edges: .top)
@@ -426,6 +427,42 @@ struct ProductDetailView: View {
         .onAppear {
             detailVM.isShowDetail = true
         }
+    }
+
+    @ViewBuilder
+    private var imageCarousel: some View {
+        let imageSize: CGFloat = CGFloat.screenWidth
+        let imageHeight: CGFloat = imageSize * 4 / 3
+
+        Group {
+            if !detailVM.imageArr.isEmpty {
+                TabView {
+                    ForEach(detailVM.imageArr, id: \.id) { imgObj in
+                        let imageURL = URL(string: imgObj.image)
+                        WebImage(url: imageURL)
+                            .resizable()
+                            .indicator(.activity)
+                            .transition(.fade(duration: 0.5))
+                            .scaledToFill()
+                            .frame(width: imageSize, height: imageHeight)
+                            .clipped()
+                    }
+                }
+                .frame(width: imageSize, height: imageHeight)
+                .tabViewStyle(.page)
+                .indexViewStyle(.page(backgroundDisplayMode: .always))
+            } else {
+                let imageURL = URL(string: detailVM.pObj.image)
+                WebImage(url: imageURL)
+                    .resizable()
+                    .indicator(.activity)
+                    .transition(.fade(duration: 0.5))
+                    .scaledToFill()
+                    .frame(width: imageSize, height: imageHeight)
+                    .clipped()
+            }
+        }
+        .frame(width: imageSize, height: imageHeight)
     }
 }
 

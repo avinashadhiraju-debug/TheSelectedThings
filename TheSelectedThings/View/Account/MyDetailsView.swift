@@ -16,6 +16,8 @@ struct MyDetailsView: View {
     
     var body: some View {
         ZStack {
+            Color.bgDetail
+                .ignoresSafeArea()
             
             ScrollView{
                 VStack(spacing: 15){
@@ -109,7 +111,7 @@ struct MyDetailsView: View {
                 }
                 .padding(.top, .topInsets)
                 .padding(.horizontal, 20)
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .shadow(color: Color.black.opacity(0.2),  radius: 2 )
                 
                 Spacer()

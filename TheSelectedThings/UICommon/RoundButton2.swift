@@ -2,26 +2,32 @@ import SwiftUI
 
 struct GlassButtonStyle2: ButtonStyle {
     @State private var isHovered = false
+    var isAdaptive: Bool = true
+    @Environment(\.colorScheme) var colorScheme
+    
+    private var isLightMode: Bool {
+        isAdaptive && colorScheme == .light
+    }
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundColor(.white)
+            .foregroundColor(isLightMode ? .primaryText : .white)
             .background(
                 Capsule()
-                    .fill(Color.white.opacity(0.10))
+                    .fill(isLightMode ? Color.black.opacity(0.06) : Color.white.opacity(0.10))
             )
             .overlay(
                 Capsule()
                     .stroke(
                         LinearGradient(
-                            colors: [Color.white.opacity(0.60), Color.clear],
+                            colors: [Color.clear, Color.primaryApp.opacity(0.60), Color.clear],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
                         lineWidth: 2.29
                     )
             )
-            .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
+            .shadow(color: Color.black.opacity(isLightMode ? 0.03 : 0.15), radius: 20, x: 0, y: 10)
             .scaleEffect(configuration.isPressed ? 0.98 : (isHovered ? 1.02 : 1.0))
             .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
             .animation(.easeInOut(duration: 0.2), value: isHovered)
@@ -34,6 +40,7 @@ struct GlassButtonStyle2: ButtonStyle {
 struct RoundButton2: View {
     var title: String = "Tap Me"
     var image: String? = nil
+    var isAdaptive: Bool = true
     var didTap: (() -> ())?
     
     var body: some View {
@@ -44,19 +51,28 @@ struct RoundButton2: View {
         } label: {
             HStack(spacing: 12) {
                 if let imageName = image {
-                    Image(imageName)
-                        .renderingMode(.original)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 20, height: 20)
+                    if UIImage(named: imageName) != nil {
+                        Image(imageName)
+                            .renderingMode(.original)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                    } else {
+                        Image(systemName: imageName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                    }
                 }
                 
                 Text(title)
-                    .font(.customfont(.semibold, fontSize: 18))
+                    .font(.customfont(.semibold, fontSize: 15))
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
         }
-        .buttonStyle(GlassButtonStyle2()) // Applies the custom liquid glass material style directly
+        .buttonStyle(GlassButtonStyle2(isAdaptive: isAdaptive)) // Applies the custom liquid glass material style directly
     }
 }
 

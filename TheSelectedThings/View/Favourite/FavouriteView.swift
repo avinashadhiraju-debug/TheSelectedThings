@@ -14,7 +14,7 @@ struct FavouriteView: View {
     var body: some View {
         ZStack {
             // Minimal background
-            Color(hex: "FCFCFC")
+            Color.bgDetail
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -29,7 +29,7 @@ struct FavouriteView: View {
                     Spacer()
                 }
                 .padding(.top, .topInsets)
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .shadow(color: Color.black.opacity(0.02), radius: 3, x: 0, y: 2)
                 
                 // 2. Main Content

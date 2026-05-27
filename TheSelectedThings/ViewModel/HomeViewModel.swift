@@ -12,25 +12,34 @@ class HomeViewModel: ObservableObject
     static var shared: HomeViewModel = HomeViewModel()
     
     @Published var selectTab: Int = 0
-    @Published var txtSearch: String = ""
-    
-    
+    @Published var txtSearch: String = "" {
+        didSet { updateFilteredList() }
+    }
+
     @Published var showError = false
     @Published var errorMessage = ""
-    
+
     @Published var offerArr: [ProductModel] = []
     @Published var bestArr: [ProductModel] = []
-    @Published var listArr: [ProductModel] = []
+    @Published var listArr: [ProductModel] = [] {
+        didSet { updateFilteredList() }
+    }
     @Published var typeArr: [TypeModel] = []
-    
-    
-    @Published var selectedCategory: String = "All"
-    
-    var filteredListArr: [ProductModel] {
-        listArr.filter { product in
-            let matchesCategory = selectedCategory == "All" || product.catName.localizedCaseInsensitiveContains(selectedCategory)
-            let matchesSearch = txtSearch.isEmpty || product.name.localizedCaseInsensitiveContains(txtSearch) || product.brandName.localizedCaseInsensitiveContains(txtSearch) || product.designer.localizedCaseInsensitiveContains(txtSearch)
-            return matchesCategory && matchesSearch
+
+    @Published var selectedCategory: String = "All" {
+        didSet { updateFilteredList() }
+    }
+
+    @Published private(set) var filteredListArr: [ProductModel] = []
+
+    private func updateFilteredList() {
+        filteredListArr = listArr.filter { product in
+            let matchesCategory = selectedCategory == "All" || product.catName == selectedCategory
+            if !matchesCategory { return false }
+            guard !txtSearch.isEmpty else { return true }
+            return product.name.localizedCaseInsensitiveContains(txtSearch) ||
+                   product.brandName.localizedCaseInsensitiveContains(txtSearch) ||
+                   product.designer.localizedCaseInsensitiveContains(txtSearch)
         }
     }
     

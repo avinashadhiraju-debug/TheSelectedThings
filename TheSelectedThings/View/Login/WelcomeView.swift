@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @ObservedObject private var router = AuthRouter.shared
     @State private var isIntroRunning = true
     @State private var currentGreetingIndex = 0
     @State private var greetingOpacity = 0.0
     @State private var greetingScale = 0.8
     @State private var showMainContent = false
-    @State private var showSignIn = false
+    @State private var introTask: Task<Void, Never>? = nil
     
     private var isInPreview: Bool {
         ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
@@ -29,81 +30,134 @@ struct WelcomeView: View {
     ]
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                AuthBackgroundView()
-                
-                // 1. Cinematic Greeting Layer (Centered multilingual introductions)
-                if isIntroRunning {
-                    VStack(alignment: .center, spacing: 0) {
-                        Spacer()
-                        
-                        Text(greetings[currentGreetingIndex])
-                            .font(.customfont(.bold, fontSize: 56))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                            .scaleEffect(greetingScale)
-                            .animation(nil, value: greetingScale)
-                            .opacity(greetingOpacity)
-                            .animation(nil, value: greetingOpacity)
-                            .blur(radius: (1.0 - greetingOpacity) * 8)
-                            .shadow(color: Color.primaryApp.opacity(0.35), radius: 12, x: 0, y: 0)
-                        
-                        Spacer()
+        ZStack {
+            AuthBackgroundView() // SINGLE STATIC ANIMATED BACKGROUND
+            
+            // Onboarding views layered on top
+            Group {
+                if let currentScreen = router.path.last {
+                    switch currentScreen {
+                    case .signIn:
+                        SignInView()
+                    case .login:
+                        LoginView()
+                    case .signUp:
+                        SignUpView()
+                    case .forgotPassword:
+                        ForgotPasswordView()
+                    case .otp:
+                        OTPView()
+                    case .forgotPasswordSet:
+                        ForgotPasswordSetView()
                     }
-                    .padding(.horizontal, 20)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .transition(.opacity)
-                }
-                
-                // 2. Premium Onboarding Layer (Fully structured, center-aligned, stable layout)
-                if showMainContent {
-                    VStack(alignment: .center, spacing: 12) {
-                        Spacer()
-                        
-                        Image("app_logo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 120, height: 120)
-                            .padding(.bottom, 12)
-                        
-                        Text("Selected Things")
-                            .font(.customfont(.semibold, fontSize: 48))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                            .shadow(color: Color.primaryApp.opacity(0.35), radius: 12, x: 0, y: 0)
-                            .padding(.bottom, 2)
-                        
-                        VStack(alignment: .center, spacing: 16) {
-                            Text("Welcome to Our Crafted Experiences")
-                                .font(.customfont(.medium, fontSize: 20))
-                                .foregroundColor(.white.opacity(0.7))
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .padding(.bottom, 30)
-                            
-                            RoundButton(title: "Get Started") {
-                                showSignIn = true
+                } else {
+                    // Root Onboarding UI
+                    ZStack {
+                        // 1. Cinematic Greeting Layer (Centered multilingual introductions)
+                        if isIntroRunning {
+                            VStack(alignment: .center, spacing: 0) {
+                                Spacer()
+                                
+                                Text(greetings[currentGreetingIndex])
+                                    .font(.customfont(.bold, fontSize: 56))
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+                                    .scaleEffect(greetingScale)
+                                    .animation(nil, value: greetingScale)
+                                    .opacity(greetingOpacity)
+                                    .animation(nil, value: greetingOpacity)
+                                    .blur(radius: (1.0 - greetingOpacity) * 8)
+                                    .shadow(color: Color.primaryApp.opacity(0.35), radius: 12, x: 0, y: 0)
+                                
+                                Spacer()
                             }
-                            .frame(maxWidth: 300, minHeight: 52)
-                            .contentShape(Rectangle())
+                            .padding(.horizontal, 20)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .transition(.opacity)
                         }
                         
-                        Spacer()
+                        // 2. Premium Onboarding Layer (Fully structured, center-aligned, stable layout)
+                        if showMainContent {
+                            VStack(alignment: .center, spacing: 12) {
+                                Spacer()
+                                
+                                Image("app_logo")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 120, height: 120)
+                                    .padding(.bottom, 12)
+                                
+                                Text("Selected Things")
+                                    .font(.customfont(.semibold, fontSize: 48))
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+                                    .shadow(color: Color.primaryApp.opacity(0.35), radius: 12, x: 0, y: 0)
+                                    .padding(.bottom, 2)
+                                
+                                VStack(alignment: .center, spacing: 16) {
+                                    Text("Welcome to Our Crafted Experiences")
+                                        .font(.customfont(.medium, fontSize: 20))
+                                        .foregroundColor(.white.opacity(0.7))
+                                        .multilineTextAlignment(.center)
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                        .padding(.bottom, 30)
+                                    
+                                    RoundButton(title: "Get Started", isAdaptive: false) {
+                                        router.navigate(to: .signIn)
+                                    }
+                                    .frame(maxWidth: 300, minHeight: 52)
+                                    .contentShape(Rectangle())
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal, 20)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .transition(.opacity)
+                        }
                     }
-                    .padding(.horizontal, 20)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .transition(.opacity)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .navigationTitle("")
-            .navigationBarBackButtonHidden(true)
-            .navigationBarHidden(true)
-            .navigationDestination(isPresented: $showSignIn) {
-                SignInView()
+            .transition(.asymmetric(
+                insertion: .opacity.combined(with: .move(edge: .trailing)),
+                removal: .opacity.combined(with: .move(edge: .leading))
+            ))
+            
+            // Custom Premium Back Button
+            if !router.path.isEmpty {
+                VStack {
+                    HStack {
+                        Button {
+                            router.navigateBack()
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.title3.bold())
+                                .foregroundColor(.white)
+                                .padding(12)
+                                .background(Color.white.opacity(0.15))
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
+                        }
+                        .padding(.leading, 20)
+                        .padding(.top, .topInsets + 8)
+                        
+                        Spacer()
+                    }
+                    Spacer()
+                }
+                .ignoresSafeArea()
+                .transition(.opacity)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .gesture(
+            DragGesture(minimumDistance: 15, coordinateSpace: .local)
+                .onEnded { value in
+                    if value.translation.width > 80 && value.startLocation.x < 50 {
+                        router.navigateBack()
+                    }
+                }
+        )
         .onAppear {
             if isInPreview {
                 // In Xcode previews, avoid intro animations and show final layout
@@ -122,18 +176,19 @@ struct WelcomeView: View {
             UINavigationBar.appearance().isTranslucent = true
             UINavigationBar.appearance().tintColor = .white
         }
+        .onDisappear {
+            introTask?.cancel()
+        }
     }
     
     private func runIntroAnimation() {
         guard isIntroRunning else { return }
         
-        let delayStep = 1.05
+        introTask?.cancel()
         
-        for index in 0..<greetings.count {
-            let delay = Double(index) * delayStep
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                guard self.isIntroRunning else { return }
+        introTask = Task {
+            for index in 0..<greetings.count {
+                if Task.isCancelled { return }
                 
                 self.currentGreetingIndex = index
                 
@@ -144,24 +199,39 @@ struct WelcomeView: View {
                 
                 if index == self.greetings.count - 1 {
                     // Let the final greeting ("Welcome") settle, then seamlessly transition
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.95) {
-                        withAnimation(.easeInOut(duration: 0.65)) {
-                            self.isIntroRunning = false
-                            self.showMainContent = true
-                        }
+                    do {
+                        try await Task.sleep(nanoseconds: 950_000_000) // 0.95 seconds
+                    } catch {
+                        return
+                    }
+                    if Task.isCancelled { return }
+                    
+                    withAnimation(.easeInOut(duration: 0.65)) {
+                        self.isIntroRunning = false
+                        self.showMainContent = true
                     }
                 } else {
                     // Regular transition for the intermediate multilingual hello greetings
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                        withAnimation(.easeIn(duration: 0.35)) {
-                            self.greetingOpacity = 0.0
-                            self.greetingScale = 1.1
-                        }
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                            self.greetingScale = 0.8
-                        }
+                    do {
+                        try await Task.sleep(nanoseconds: 700_000_000) // 0.7 seconds
+                    } catch {
+                        return
                     }
+                    if Task.isCancelled { return }
+                    
+                    withAnimation(.easeIn(duration: 0.35)) {
+                        self.greetingOpacity = 0.0
+                        self.greetingScale = 1.1
+                    }
+                    
+                    do {
+                        try await Task.sleep(nanoseconds: 350_000_000) // 0.35 seconds
+                    } catch {
+                        return
+                    }
+                    if Task.isCancelled { return }
+                    
+                    self.greetingScale = 0.8
                 }
             }
         }
@@ -177,34 +247,143 @@ struct WelcomeView_Previews: PreviewProvider {
 }
 
 struct AuthBackgroundView: View {
+    @ObservedObject var mainVM = MainViewModel.shared
     @State private var moveGradient = false
     
     var body: some View {
+        let isSettled = mainVM.isSettlingBackground
+        let isLight = mainVM.isDarkMode == false
+        
+        // Base color morphing: transitioning from onboarding dark mode base to final home base (black or white)
+        let baseColor: Color = isSettled ? (isLight ? .white : .black) : .black
+        
+        // Blob 1: Morph to bottom-right, expand radius and size, adjust opacity to match Home screen exactly
+        let blob1Opacity: Double = isSettled ? (isLight ? 0.4 : 0.2) : 0.35
+        let blob1Width: CGFloat = isSettled ? 500 : 350
+        let blob1OffsetX: CGFloat = isSettled ? .screenWidth * 0.4 : (moveGradient ? -80 : 80)
+        let blob1OffsetY: CGFloat = isSettled ? .screenHeight * 0.4 : (moveGradient ? -100 : 100)
+        let blob1Scale: CGFloat = isSettled ? 1.0 : (moveGradient ? 1.25 : 0.8)
+        let blob1Radius: CGFloat = isSettled ? 250 : 180
+        
+        // Blob 2: Smoothly fade out completely as we transition to the Home screen
+        let blob2Opacity: Double = isSettled ? 0.0 : 0.25
+        let blob2OffsetX: CGFloat = isSettled ? .screenWidth * 0.4 : (moveGradient ? 100 : -100)
+        let blob2OffsetY: CGFloat = isSettled ? .screenHeight * 0.4 : (moveGradient ? 120 : -120)
+        let blob2Scale: CGFloat = isSettled ? 0.5 : (moveGradient ? 0.75 : 1.3)
+        
         ZStack {
-            // Premium solid black base
-            Color.black
+            baseColor
+                .animation(.easeInOut(duration: 0.8), value: isSettled)
+                .animation(.easeInOut(duration: 0.8), value: isLight)
             
-            // Slow animated ambient glow blobs matching primary brand design
             ZStack {
-                RadialGradient(colors: [Color.primaryApp.opacity(0.35), .clear], center: .center, startRadius: 10, endRadius: 180)
-                    .frame(width: 350, height: 350)
-                    .offset(x: moveGradient ? -80 : 80, y: moveGradient ? -100 : 100)
-                    .scaleEffect(moveGradient ? 1.25 : 0.8)
+                // Blob 1 (ambient glow that settles into the bottom-right corner)
+                RadialGradient(colors: [Color.primaryApp.opacity(blob1Opacity), .clear], center: .center, startRadius: 10, endRadius: blob1Radius)
+                    .frame(width: blob1Width, height: blob1Width)
+                    .offset(x: blob1OffsetX, y: blob1OffsetY)
+                    .scaleEffect(blob1Scale)
+                    .animation(.easeInOut(duration: 0.8), value: isSettled)
                 
-                RadialGradient(colors: [Color.primaryApp.opacity(0.25), .clear], center: .center, startRadius: 10, endRadius: 220)
+                // Blob 2 (secondary floating glow that dissolves seamlessly)
+                RadialGradient(colors: [Color.primaryApp.opacity(blob2Opacity), .clear], center: .center, startRadius: 10, endRadius: 220)
                     .frame(width: 450, height: 450)
-                    .offset(x: moveGradient ? 100 : -100, y: moveGradient ? 120 : -120)
-                    .scaleEffect(moveGradient ? 0.75 : 1.3)
+                    .offset(x: blob2OffsetX, y: blob2OffsetY)
+                    .scaleEffect(blob2Scale)
+                    .animation(.easeInOut(duration: 0.8), value: isSettled)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .blur(radius: 50)
-            .blendMode(.screen)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 6.5).repeatForever(autoreverses: true)) {
-                    moveGradient = true
-                }
-            }
+            .blendMode(isLight ? .normal : .screen)
+            .drawingGroup()
+            .animation(.easeInOut(duration: 0.8), value: isLight)
         }
         .ignoresSafeArea()
+        .onAppear {
+            withAnimation(.easeInOut(duration: 6.5).repeatForever(autoreverses: true)) {
+                moveGradient = true
+            }
+        }
+    }
+}
+
+import Combine
+
+enum AuthPath: Hashable {
+    case signIn
+    case login
+    case signUp
+    case forgotPassword
+    case otp
+    case forgotPasswordSet
+}
+
+@MainActor
+class AuthRouter: ObservableObject {
+    static let shared = AuthRouter()
+    
+    @Published var path: [AuthPath] = []
+    private var cancellables = Set<AnyCancellable>()
+    
+    private init() {
+        // Automatically synchronize forgot password transitions based on ForgotPasswordViewModel states
+        ForgotPasswordViewModel.shared.$showVerify
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] showVerify in
+                guard let self = self else { return }
+                if showVerify {
+                    if self.path.last != .otp {
+                        self.navigate(to: .otp)
+                    }
+                }
+            }
+            .store(in: &cancellables)
+            
+        ForgotPasswordViewModel.shared.$showSetPassword
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] showSetPassword in
+                guard let self = self else { return }
+                if showSetPassword {
+                    if self.path.last != .forgotPasswordSet {
+                        self.navigate(to: .forgotPasswordSet)
+                    }
+                } else {
+                    if self.path.last == .forgotPasswordSet {
+                        self.popToRootOrLogin()
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func navigate(to destination: AuthPath) {
+        if path.last == destination { return }
+        withAnimation(.easeInOut(duration: 0.45)) {
+            path.append(destination)
+        }
+    }
+    
+    func navigateBack() {
+        withAnimation(.easeInOut(duration: 0.45)) {
+            if !path.isEmpty {
+                path.removeLast()
+            }
+        }
+    }
+    
+    func popToRoot() {
+        withAnimation(.easeInOut(duration: 0.45)) {
+            path.removeAll()
+        }
+    }
+    
+    func popToRootOrLogin() {
+        withAnimation(.easeInOut(duration: 0.45)) {
+            if let loginIndex = path.firstIndex(of: .login) {
+                path = Array(path[...loginIndex])
+            } else {
+                path.removeAll()
+            }
+        }
     }
 }
 

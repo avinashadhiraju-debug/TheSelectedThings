@@ -9,12 +9,10 @@ import SwiftUI
 
 struct SignInView: View {
     @State var txtMobile: String = ""
-    @State private var showLogin = false
-    @State private var showSignUp = false
 
     var body: some View {
         ZStack {
-            AuthBackgroundView()
+            // Background is transparent to let the master AuthBackgroundView flow smoothly
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -38,23 +36,17 @@ struct SignInView: View {
                         .padding(.bottom, .screenWidth * 0.08)
                     
                     HStack(spacing: 20) {
-                        RoundButton(title: "Sign In") {
-                            showLogin = true
+                        RoundButton(title: "Log In", isAdaptive: false) {
+                            AuthRouter.shared.navigate(to: .login)
                         }
                         .frame(maxWidth: .infinity)
 
-                        RoundButton(title: "Sign Up") {
-                            showSignUp = true
+                        RoundButton(title: "Sign Up", isAdaptive: false) {
+                            AuthRouter.shared.navigate(to: .signUp)
                         }
                         .frame(maxWidth: .infinity)
                     }
                     .padding(.bottom, 16)
-                    .navigationDestination(isPresented: $showLogin) {
-                        LoginView()
-                    }
-                    .navigationDestination(isPresented: $showSignUp) {
-                        SignUpView()
-                    }
                     
                     Spacer()
                     
@@ -96,7 +88,7 @@ struct SignInView: View {
                         .opacity(0.6)
                         .offset(y: 4)
                         
-                        RoundButton2(title: "Continue with Google", image: "google_logo") {
+                        RoundButton2(title: "Continue with Google", image: "google_logo", isAdaptive: false) {
                             // Google Login Action
                         }
                     }
@@ -112,7 +104,7 @@ struct SignInView: View {
                             .opacity(0.6)
                             .offset(y: 4)
                         
-                        RoundButton2(title: "Continue with Facebook", image: "facebook_logo") {
+                        RoundButton2(title: "Continue with Facebook", image: "facebook_logo", isAdaptive: false) {
                             // Facebook Login Action
                         }
                     }

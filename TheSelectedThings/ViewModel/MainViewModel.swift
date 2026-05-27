@@ -20,6 +20,7 @@ class MainViewModel: ObservableObject {
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var isUserLogin: Bool = false
+    @Published var isSettlingBackground: Bool = false
     @Published var userObj: UserModel = UserModel(dict: [:])
     
     @Published var isDarkMode: Bool = UserDefaults.standard.bool(forKey: "is_dark_mode") {
@@ -33,7 +34,7 @@ class MainViewModel: ObservableObject {
         
         if( Utils.UDValueBool(key: Globs.userLogin) ) {
             // User Login
-            self.setUserData(uDict: Utils.UDValue(key: Globs.userPayload) as? NSDictionary ?? [:] )
+            self.setUserData(uDict: Utils.UDValue(key: Globs.userPayload) as? NSDictionary ?? [:], isAnimated: false)
         }else{
             // User Not Login
         }
@@ -143,18 +144,40 @@ class MainViewModel: ObservableObject {
 
     }
     
-    func setUserData(uDict: NSDictionary) {
-        
-        
+    func setUserData(uDict: NSDictionary, isAnimated: Bool = true) {
         Utils.UDSET(data: uDict, key: Globs.userPayload)
         Utils.UDSET(data: true, key: Globs.userLogin)
         self.userObj = UserModel(dict: uDict)
-        self.isUserLogin = true
         
-        self.txtUsername = ""
-        self.txtEmail = ""
-        self.txtPassword = ""
-        self.isShowPassword = false
+        if isAnimated {
+            // Phase 1: Start background settling animation
+            withAnimation(.easeInOut(duration: 0.9)) {
+                self.isSettlingBackground = true
+            }
+            
+            // Phase 2: After background has visually moved, smoothly crossfade to main tab
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+                withAnimation(.easeInOut(duration: 0.6)) {
+                    self.isUserLogin = true
+                }
+                
+                self.txtUsername = ""
+                self.txtEmail = ""
+                self.txtPassword = ""
+                self.isShowPassword = false
+                
+                // Phase 3: Reset settling state only after full transition is complete
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    self.isSettlingBackground = false
+                }
+            }
+        } else {
+            self.isUserLogin = true
+            self.txtUsername = ""
+            self.txtEmail = ""
+            self.txtPassword = ""
+            self.isShowPassword = false
+        }
     }
     
 }

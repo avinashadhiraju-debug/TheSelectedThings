@@ -15,6 +15,8 @@ struct NotificationView: View {
     
     var body: some View {
         ZStack{
+            Color.bgDetail
+                .ignoresSafeArea()
             
             ScrollView{
                 LazyVStack(spacing: 15) {
@@ -47,7 +49,7 @@ struct NotificationView: View {
                             }
                          
                         .padding(15)
-                        .background( nObj.isRead == 1 ? Color.placeholder : Color.white)
+                        .background( nObj.isRead == 1 ? Color.placeholder.opacity(0.15) : Color.cardBackground )
                         .cornerRadius(5)
                         .shadow(color: Color.black.opacity(0.15), radius: 2)
                        
@@ -100,7 +102,7 @@ struct NotificationView: View {
                 }
                 .padding(.top, .topInsets)
                 .padding(.horizontal, 20)
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .shadow(color: Color.black.opacity(0.2),  radius: 2 )
                 
                 Spacer()

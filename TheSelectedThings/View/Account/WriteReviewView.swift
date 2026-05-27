@@ -16,6 +16,8 @@ struct WriteReviewView: View {
     var body: some View {
         
         ZStack{
+            Color.bgDetail
+                .ignoresSafeArea()
             
             ScrollView {
                 VStack(spacing: 15) {
@@ -27,7 +29,7 @@ struct WriteReviewView: View {
                             Image(systemName: "star.fill")
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor( index <= rating ? Color.orange : Color.black.opacity(0.2))
+                                .foregroundColor( index <= rating ? Color.orange : Color.secondaryText.opacity(0.35))
                                 .frame(width: .widthPer(per: 0.1), height: .widthPer(per: 0.1))
                                 .onTapGesture {
                                     rating = index
@@ -40,6 +42,7 @@ struct WriteReviewView: View {
                         
                             TextEditor(text: $txtMessage)
                             .multilineTextAlignment(.leading)
+                            .foregroundColor(.primaryText)
                             .onAppear(){
                                 UITextView.appearance().backgroundColor = .clear
                             }
@@ -89,7 +92,7 @@ struct WriteReviewView: View {
                 }
                 .padding(.top, .topInsets)
                 .padding(.horizontal, 20)
-                .background( Color.white )
+                .background( Color.cardBackground )
                 .shadow(color: .black.opacity(0.2), radius: 2)
                 
                 Spacer()

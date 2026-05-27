@@ -40,11 +40,17 @@ extension CGFloat {
     }
     
     static var screenWidth: Double {
-        Double(keyWindow?.bounds.width ?? UIScreen.main.bounds.width)
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+            return Double(UIScreen.main.bounds.width)
+        }
+        return Double(keyWindow?.bounds.width ?? UIScreen.main.bounds.width)
     }
     
     static var screenHeight: Double {
-        Double(keyWindow?.bounds.height ?? UIScreen.main.bounds.height)
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+            return Double(UIScreen.main.bounds.height)
+        }
+        return Double(keyWindow?.bounds.height ?? UIScreen.main.bounds.height)
     }
     
     static func widthPer(per: Double) -> Double {
@@ -75,20 +81,58 @@ extension CGFloat {
     
 }
 
+extension UIColor {
+    convenience init(hex: String) {
+        let hex = hex.trimmingCharacters(in: .alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB(12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+        self.init(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: CGFloat(a) / 255)
+    }
+}
+
 extension Color {
     
-    static let primaryApp = Color(hex: "53B175")
+    static let primaryApp = Color(hex: "50C850")
+    static let secondaryprimaryApp = Color(hex: "806848")
     
-    static let primaryText = Color(hex: "030303")
+    static let primaryText = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(hex: "F3F3F3") : UIColor(hex: "030303")
+    })
     
-    static let secondaryText = Color(hex: "828282")
+    static let secondaryText = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(hex: "AAAAAA") : UIColor(hex: "828282")
+    })
     
-    static let textTitle = Color(hex: "7C7C7C")
+    static let textTitle = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(hex: "BBBBBB") : UIColor(hex: "7C7C7C")
+    })
     
-    static let placeholder = Color(hex: "B1B1B1")
+    static let placeholder = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(hex: "555555") : UIColor(hex: "B1B1B1")
+    })
     
-    static let darkGray = Color(hex: "4C4F4D")
+    static let darkGray = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(hex: "CCCCCC") : UIColor(hex: "4C4F4D")
+    })
     
+    static let cardBackground = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(hex: "1C1C1E") : UIColor(hex: "F8F8FA")
+    })
+    
+    static let bgDetail = Color(UIColor { trait in
+        trait.userInterfaceStyle == .dark ? UIColor(hex: "121212") : UIColor.white
+    })
     
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: .alphanumerics.inverted)

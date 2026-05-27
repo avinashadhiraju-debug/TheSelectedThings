@@ -9,11 +9,11 @@ import SwiftUI
 
 struct LoginView: View {
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
-    @StateObject var loginVM = MainViewModel.shared
+    @ObservedObject var loginVM = MainViewModel.shared
 
     var body: some View {
         ZStack {
-            AuthBackgroundView()
+            // Background is transparent to let the master AuthBackgroundView flow smoothly
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -46,8 +46,8 @@ struct LoginView: View {
                     LineSecureField(title: "Password", placeholder: "Enter your password", txt: $loginVM.txtPassword, isShowPassword: $loginVM.isShowPassword, textColor: .white)
                         .padding(.bottom, .screenWidth * 0.02)
                     
-                    NavigationLink {
-                        ForgotPasswordView()
+                    Button {
+                        AuthRouter.shared.navigate(to: .forgotPassword)
                     } label: {
                         Text("Forgot Password?")
                             .font(.customfont(.medium, fontSize: 14))
@@ -56,15 +56,15 @@ struct LoginView: View {
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .trailing)
                     .padding(.bottom, .screenWidth * 0.05)
                     
-                    RoundButton(title: "Log In") {
+                    RoundButton(title: "Log In", isAdaptive: false) {
                         loginVM.serviceCallLogin()
                     }
                     .padding(.bottom, .screenWidth * 0.06)
                     
                     HStack {
                         Spacer()
-                        NavigationLink {
-                            SignUpView()
+                        Button {
+                            AuthRouter.shared.navigate(to: .signUp)
                         } label: {
                             HStack {
                                 Text("Don’t have an account?")

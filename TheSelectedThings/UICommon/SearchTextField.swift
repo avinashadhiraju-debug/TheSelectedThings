@@ -8,28 +8,48 @@
 import SwiftUI
 
 struct SearchTextField: View {
-   
-    @State var placholder: String = "Placholder"
+    @State var placholder: String = "Placeholder"
     @Binding var txt: String
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         HStack(spacing: 15) {
-            
             Image("search")
                 .resizable()
+                .renderingMode(.template)
                 .scaledToFit()
                 .frame(width: 20, height: 20)
+                .foregroundColor(.secondaryText)
            
-            TextField(placholder, text: $txt)
+            TextField(text: $txt) {
+                Text(placholder)
+                    .foregroundColor(.placeholder)
+            }
                 .font(.customfont(.regular, fontSize: 17))
+                .foregroundColor(.primaryText)
+                .tint(.primaryText)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
                 .frame(minWidth: 0, maxWidth: .infinity)
         }
         .frame(height: 30)
         .padding(15)
-        .background(Color(hex: "F2F3F2"))
-        .cornerRadius(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(colorScheme == .dark ? Color.white.opacity(0.10) : Color.black.opacity(0.04))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.primaryText.opacity(colorScheme == .dark ? 0.3 : 0.08), Color.clear],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: Color.black.opacity(0.02), radius: 8, x: 0, y: 4)
     }
 }
 

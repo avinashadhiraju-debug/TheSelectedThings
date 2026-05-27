@@ -18,7 +18,7 @@ struct AccountView: View {
     var body: some View {
         ZStack {
             // Elegant background
-            Color(hex: "FCFCFC")
+            Color.bgDetail
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -135,7 +135,7 @@ struct AccountView: View {
                                 }
                             }
                         }
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.white))
+                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardBackground))
                         .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
@@ -166,7 +166,7 @@ struct AccountView: View {
                                     .lineSpacing(6)
                             }
                             .padding(18)
-                            .background(Color.white)
+                            .background(Color.cardBackground)
                             .cornerRadius(16)
                             .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                             .overlay(
@@ -200,7 +200,7 @@ struct AccountView: View {
                             }
                         }
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 56, maxHeight: 56)
-                        .background(Color.white)
+                        .background(Color.cardBackground)
                         .cornerRadius(16)
                         .shadow(color: Color.black.opacity(0.01), radius: 8, x: 0, y: 4)
                         .overlay(

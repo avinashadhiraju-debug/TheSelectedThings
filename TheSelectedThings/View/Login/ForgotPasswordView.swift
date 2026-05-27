@@ -9,11 +9,11 @@ import SwiftUI
 
 struct ForgotPasswordView: View {
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
-    @StateObject var forgotVM = ForgotPasswordViewModel.shared
+    @ObservedObject var forgotVM = ForgotPasswordViewModel.shared
 
     var body: some View {
         ZStack {
-            AuthBackgroundView()
+            // Background is transparent to let the master AuthBackgroundView flow smoothly
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -43,7 +43,7 @@ struct ForgotPasswordView: View {
                     LineTextField(title: "Email", placeholder: "Enter your email address", txt: $forgotVM.txtEmail, keyboardType: .emailAddress, textColor: .white)
                         .padding(.bottom, .screenWidth * 0.07)
                     
-                    RoundButton(title: "Submit") {
+                    RoundButton(title: "Submit", isAdaptive: false) {
                         forgotVM.serviceCallRequest()
                     }
                     .padding(.bottom, .screenWidth * 0.05)
@@ -57,12 +57,6 @@ struct ForgotPasswordView: View {
         .alert(isPresented: $forgotVM.showError) {
             Alert(title: Text(Globs.AppName), message: Text(forgotVM.errorMessage), dismissButton: .default(Text("Ok")))
         }
-        .background(NavigationLink(destination: OTPView(), isActive: $forgotVM.showVerify, label: {
-            EmptyView()
-        }))
-        .background(NavigationLink(destination: ForgotPasswordSetView(), isActive: $forgotVM.showSetPassword, label: {
-            EmptyView()
-        }))
         .navigationTitle("")
         .ignoresSafeArea()
     }

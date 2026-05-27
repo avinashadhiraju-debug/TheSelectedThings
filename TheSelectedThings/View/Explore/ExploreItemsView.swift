@@ -19,7 +19,7 @@ struct ExploreItemsView: View {
     var body: some View {
         ZStack {
             // Elegant background
-            Color(hex: "FCFCFC")
+            Color.bgDetail
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -52,7 +52,7 @@ struct ExploreItemsView: View {
                 }
                 .padding(.top, .topInsets)
                 .padding(.horizontal, 15)
-                .background(Color.white)
+                .background(Color.cardBackground)
                 .shadow(color: Color.black.opacity(0.01), radius: 3, x: 0, y: 2)
                 
                 // Showroom items grid

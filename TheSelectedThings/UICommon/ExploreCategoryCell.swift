@@ -34,11 +34,17 @@ struct ExploreCategoryCell: View {
             
         }
         .padding(15)
-        .background( cObj.color.opacity(0.3) )
-        .cornerRadius(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.cardBackground)
+        )
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(cObj.color.opacity(0.12))
+        )
         .overlay (
             RoundedRectangle(cornerRadius: 16)
-                .stroke(cObj.color, lineWidth: 1)
+                .stroke(cObj.color.opacity(0.40), lineWidth: 1)
         )
     }}
 

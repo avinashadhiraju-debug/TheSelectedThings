@@ -9,11 +9,11 @@ import SwiftUI
 
 struct ForgotPasswordSetView: View {
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
-    @StateObject var forgotVM = ForgotPasswordViewModel.shared
+    @ObservedObject var forgotVM = ForgotPasswordViewModel.shared
 
     var body: some View {
         ZStack {
-            AuthBackgroundView()
+            // Background is transparent to let the master AuthBackgroundView flow smoothly
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -46,7 +46,7 @@ struct ForgotPasswordSetView: View {
                     LineSecureField(title: "Confirm Password", placeholder: "Enter your confirm password", txt: $forgotVM.txtConfirmPassword, isShowPassword: $forgotVM.isConfirmPassword, textColor: .white)
                         .padding(.bottom, .screenWidth * 0.04)
                     
-                    RoundButton(title: "Submit") {
+                    RoundButton(title: "Submit", isAdaptive: false) {
                         forgotVM.serviceCallSetPassword()
                     }
                     .padding(.bottom, .screenWidth * 0.05)

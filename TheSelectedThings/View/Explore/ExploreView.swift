@@ -19,7 +19,7 @@ struct ExploreView: View {
     var body: some View {
         ZStack {
             // Elegant background
-            Color(hex: "FCFCFC")
+            Color.bgDetail
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -34,12 +34,10 @@ struct ExploreView: View {
                 }
                 .padding(.bottom, 20)
                 
-                // 2. Search Button
-                RoundButton(title: "Search Designs...", image: "search") {
-                    // trigger search / show search overlay
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
+                // 2. Search Field
+                SearchTextField(placholder: "Search collections...", txt: $explorVM.txtSearch)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 20)
                 
                 // 3. Category Grid List
                 if explorVM.filteredListArr.isEmpty {

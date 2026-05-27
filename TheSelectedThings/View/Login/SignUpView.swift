@@ -9,11 +9,11 @@ import SwiftUI
 
 struct SignUpView: View {
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
-    @StateObject var mainVM = MainViewModel.shared
+    @ObservedObject var mainVM = MainViewModel.shared
 
     var body: some View {
         ZStack {
-            AuthBackgroundView()
+            // Background is transparent to let the master AuthBackgroundView flow smoothly
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
@@ -73,15 +73,15 @@ struct SignUpView: View {
                     }
                     .padding(.bottom, .screenWidth * 0.04)
                     
-                    RoundButton(title: "Sign Up") {
+                    RoundButton(title: "Sign Up", isAdaptive: false) {
                         mainVM.serviceCallSignUp()
                     }
                     .padding(.bottom, .screenWidth * 0.05)
                     
                     HStack {
                         Spacer()
-                        NavigationLink {
-                            LoginView()
+                        Button {
+                            AuthRouter.shared.navigate(to: .login)
                         } label: {
                             HStack {
                                 Text("Already have an account?")

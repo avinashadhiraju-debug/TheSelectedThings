@@ -9,11 +9,11 @@ import SwiftUI
 
 struct OTPView: View {
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
-    @StateObject var forgotVM = ForgotPasswordViewModel.shared
+    @ObservedObject var forgotVM = ForgotPasswordViewModel.shared
 
     var body: some View {
         ZStack {
-            AuthBackgroundView()
+            // Background is transparent to let the master AuthBackgroundView flow smoothly
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {

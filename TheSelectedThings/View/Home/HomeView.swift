@@ -10,6 +10,7 @@ import SDWebImageSwiftUI
 
 struct HomeView: View {
     @StateObject var homeVM = HomeViewModel.shared
+    @Environment(\.colorScheme) var colorScheme
     
     // Namespace for premium category sliding capsule transition
     @Namespace private var categoryNamespace
@@ -20,7 +21,7 @@ struct HomeView: View {
     // Adaptive 2-column grid layout for lookbook cards
     private let columns = [
         GridItem(.flexible(), spacing: 15),
-        GridItem(.flexible(), spacing: 15)
+        GridItem(.flexible())
     ]
     
     var body: some View {
@@ -30,24 +31,30 @@ struct HomeView: View {
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
-                    
+
                     // 1. Premium Lookbook Header
                     headerSection
-                    
-                    // 2. Modern Minimalist Glassmorphic Search Bar
-                    searchSection
-                    
-                    // 3. Featured Hero: Design of the Day (visible only when search is empty)
-                    if homeVM.txtSearch.isEmpty && homeVM.selectedCategory == "All" {
+
+                    // 2. Featured Hero: Design of the Day
+                    if homeVM.selectedCategory == "All" {
                         heroSection
+                            .transition(.asymmetric(
+                                insertion: .opacity.combined(with: .offset(y: -10)),
+                                removal: .opacity.combined(with: .offset(y: -10))
+                            ))
                     }
-                    
+
                     // 4. Categorized Filtering Tabs
                     categoryFilterSection
-                    
+
                     // 5. Lookbook Grid Feed
                     gridSection
+
+                    // 6. Footer
+                    FooterView()
                 }
+                .padding(.bottom, 100)
+                .animation(.spring(response: 0.38, dampingFraction: 0.82), value: homeVM.selectedCategory)
             }
         }
         .alert(isPresented: $homeVM.showError) {
@@ -55,65 +62,49 @@ struct HomeView: View {
         }
         .navigationBarTitle("")
         .navigationBarHidden(true)
-        .ignoresSafeArea()
+        // FIX: Only ignore the top safe area so the ScrollView doesn't bleed off the bottom
+        .ignoresSafeArea(.container, edges: .top)
     }
     
     // MARK: - Subviews
     
     // 1. Header Section
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("SELECTED THINGS")
-                .font(.customfont(.bold, fontSize: 13))
-                .foregroundColor(.secondaryText)
-                .tracking(2.5)
-            
-            HStack(alignment: .firstTextBaseline) {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("SELECTED THINGS")
+                    .font(.customfont(.bold, fontSize: 13))
+                    .foregroundColor(.secondaryText)
+                    .tracking(2.5)
+                
                 Text("The Lookbook")
                     .font(.customfont(.bold, fontSize: 32))
                     .foregroundColor(.primaryText)
-                
-                Spacer()
-                
-                // Visual indication of current guest status (glassmorphic badge)
-                Text("GUEST MODE")
-                    .font(.customfont(.bold, fontSize: 9))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color.primaryText.opacity(0.85))
-                    )
             }
+            
+            Spacer()
+            
+            // Beautiful circular glassmorphic app logo
+            Image("app_logo")
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .frame(width: 40, height: 40)
+                .foregroundColor(.primaryText)
+                .padding(8)
+                .background(
+                    Circle()
+                        .fill(Color.cardBackground)
+                )
+                .shadow(color: Color.black.opacity(0.04), radius: 6, x: 0, y: 3)
         }
         .padding(.horizontal, 20)
-        .padding(.top, .topInsets + 15)
+        // Adjust this if your top safe area padding feels too large now
+        .padding(.top, 60)
         .padding(.bottom, 15)
     }
     
-    // 2. Search Section
-    private var searchSection: some View {
-        ZStack(alignment: .trailing) {
-            SearchTextField(placholder: "Search design, brand, or designer...", txt: $homeVM.txtSearch)
-            
-            if !homeVM.txtSearch.isEmpty {
-                Button {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        homeVM.txtSearch = ""
-                    }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondaryText)
-                        .padding(.trailing, 30)
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
-    }
-    
-    // 3. Hero Section (Design of the Day)
+    // 2. Hero Section (Design of the Day)
     @ViewBuilder
     private var heroSection: some View {
         if let heroProduct = ProductModel.curatedProducts.first {
@@ -128,8 +119,8 @@ struct HomeView: View {
                             .indicator(.activity)
                             .transition(.fade(duration: 0.6))
                             .scaledToFill()
+                            .frame(maxWidth: .infinity)
                             .frame(height: 240)
-                            .frame(minWidth: 0, maxWidth: .infinity)
                             .clipped()
                         
                         LinearGradient(
@@ -185,11 +176,11 @@ struct HomeView: View {
                         }
                     }
                     .padding(16)
-                    .background(Color.white.opacity(0.08))
+                    .background(colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.01))
                 }
                 .background(
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.white.opacity(0.08))
+                        .fill(colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.03))
                 )
                 .cornerRadius(20)
                 .shadow(color: Color.black.opacity(0.05), radius: 15, x: 0, y: 8)
@@ -197,7 +188,7 @@ struct HomeView: View {
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(
                             LinearGradient(
-                                colors: [Color.white.opacity(0.40), Color.clear],
+                                colors: [Color.primaryText.opacity(colorScheme == .dark ? 0.25 : 0.08), Color.clear],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
@@ -205,7 +196,7 @@ struct HomeView: View {
                         )
                 )
                 .scaleEffect(isHeroPressed ? 0.97 : 1.0)
-                .animation(.spring(response: 0.35, dampingFraction: 0.7), value: isHeroPressed)
+                .animation(.spring(response: 0.28, dampingFraction: 0.72), value: isHeroPressed)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 25)
             }
@@ -220,53 +211,22 @@ struct HomeView: View {
                 .font(.customfont(.bold, fontSize: 18))
                 .foregroundColor(.primaryText)
                 .padding(.horizontal, 20)
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
-                    // "All" tab
-                    categoryButton(name: "All")
-                    
+                    CategoryButton(name: "All", isSelected: homeVM.selectedCategory == "All", namespace: categoryNamespace) {
+                        homeVM.selectedCategory = "All"
+                    }
                     ForEach(homeVM.typeArr, id: \.id) { type in
-                        categoryButton(name: type.name)
+                        CategoryButton(name: type.name, isSelected: homeVM.selectedCategory == type.name, namespace: categoryNamespace) {
+                            homeVM.selectedCategory = type.name
+                        }
                     }
                 }
                 .padding(.horizontal, 20)
             }
         }
         .padding(.bottom, 20)
-    }
-    
-    // Helper to generate premium styled sliding category buttons
-    @ViewBuilder
-    private func categoryButton(name: String) -> some View {
-        let isSelected = homeVM.selectedCategory == name
-        
-        Button {
-            let impact = UIImpactFeedbackGenerator(style: .light)
-            impact.impactOccurred()
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
-                homeVM.selectedCategory = name
-            }
-        } label: {
-            Text(name)
-                .font(.customfont(.semibold, fontSize: 14))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .foregroundColor(isSelected ? .white : .primaryText)
-                .background(
-                    ZStack {
-                        if isSelected {
-                            Capsule()
-                                .fill(Color.primaryText)
-                                .matchedGeometryEffect(id: "activeCategoryCapsule", in: categoryNamespace)
-                        } else {
-                            Capsule()
-                                .fill(Color.black.opacity(0.03))
-                        }
-                    }
-                )
-        }
-        .buttonStyle(PlainButtonStyle())
     }
     
     // 5. Grid section
@@ -276,12 +236,14 @@ struct HomeView: View {
                 Text(homeVM.selectedCategory == "All" ? "Selected Masterpieces" : "\(homeVM.selectedCategory) Collection")
                     .font(.customfont(.bold, fontSize: 18))
                     .foregroundColor(.primaryText)
-                
+                    .contentTransition(.opacity)
+
                 Spacer()
-                
+
                 Text("\(homeVM.filteredListArr.count) items")
                     .font(.customfont(.semibold, fontSize: 12))
                     .foregroundColor(.secondaryText)
+                    .contentTransition(.numericText())
             }
             .padding(.horizontal, 20)
             
@@ -293,12 +255,15 @@ struct HomeView: View {
                         ProductCell(pObj: product)
                     }
                 }
+                .id(homeVM.selectedCategory)
+                .transition(.opacity)
                 .padding(.horizontal, 20)
-                .padding(.bottom, .bottomInsets + 90)
             }
         }
     }
     
+
+
     // Empty results view
     private var emptyStateView: some View {
         VStack(spacing: 12) {
@@ -311,68 +276,94 @@ struct HomeView: View {
                 .font(.customfont(.bold, fontSize: 16))
                 .foregroundColor(.primaryText)
             
-            Text("Try searching for another style, brand, or designer.")
+            Text("Try selecting a different collection.")
                 .font(.customfont(.regular, fontSize: 14))
                 .foregroundColor(.secondaryText)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
         }
         .frame(maxWidth: .infinity)
-        .padding(.bottom, 60)
     }
 }
 
 // Button style to propagate press states for hero spring scaling
 struct HeroButtonStyle: ButtonStyle {
     @Binding var isPressed: Bool
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .onChange(of: configuration.isPressed) { pressed in
+            .onChange(of: configuration.isPressed) { _, pressed in
                 isPressed = pressed
             }
     }
 }
 
-// MARK: - Previews
+// Standalone struct so SwiftUI skips re-rendering buttons whose inputs haven't changed
+private struct CategoryButton: View {
+    let name: String
+    let isSelected: Bool
+    let namespace: Namespace.ID
+    let onSelect: () -> Void
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            HomeView()
+    var body: some View {
+        Button(action: onSelect) {
+            Text(name)
+                .font(.customfont(.semibold, fontSize: 14))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .foregroundColor(isSelected ? .white : .primaryText)
+                .background(
+                    ZStack {
+                        if isSelected {
+                            Capsule()
+                                .fill(Color.primaryText)
+                                .matchedGeometryEffect(id: "activeCategoryCapsule", in: namespace)
+                        } else {
+                            Capsule()
+                                .fill(Color.black.opacity(0.03))
+                        }
+                    }
+                )
         }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Preview
+
+#Preview {
+    NavigationStack {
+        HomeView()
     }
 }
 
 // MARK: - Home Background View
 
 struct HomeBackgroundView: View {
-    @State private var moveGradient = false
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        ZStack {
-            // Adaptive off-white base for light mode, deep modern grey/black for dark mode
+        Group {
             if colorScheme == .dark {
-                Color(hex: "121212")
+                LinearGradient(
+                    colors: [
+                        Color(hex: "000000"),
+                        Color(hex: "000000"),
+                        Color .primaryApp.opacity(0.2)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             } else {
-                Color(hex: "FCFCFC")
-            }
-            
-            // Slow, GPU-friendly animated ambient glow blobs matching primary brand design
-            ZStack {
-                RadialGradient(colors: [Color.primaryApp.opacity(colorScheme == .dark ? 0.15 : 0.35), .clear], center: .center, startRadius: 10, endRadius: 180)
-                    .frame(width: 350, height: 350)
-                    .offset(x: moveGradient ? -70 : 70, y: moveGradient ? -90 : 90)
-                
-                RadialGradient(colors: [Color.primaryApp.opacity(colorScheme == .dark ? 0.15 : 0.35), .clear], center: .center, startRadius: 10, endRadius: 220)
-                    .frame(width: 450, height: 450)
-                    .offset(x: moveGradient ? 90 : -90, y: moveGradient ? 110 : -110)
-            }
-            .blur(radius: 65)
-            .animation(.easeInOut(duration: 9.0).repeatForever(autoreverses: true), value: moveGradient)
-            .onAppear {
-                moveGradient = true
+                LinearGradient(
+                    colors: [
+                        Color(hex: "FFFFFF"),
+                        Color(hex: "FFFFFF"),
+                        Color .primaryApp.opacity(0.4)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             }
         }
         .ignoresSafeArea()

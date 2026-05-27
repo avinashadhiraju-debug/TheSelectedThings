@@ -67,7 +67,7 @@ struct FavouriteRow: View {
                 
                 Divider()
             }
-            .background(Color.white)
+            .background(Color.clear)
         }
         .buttonStyle(PlainButtonStyle())
     }

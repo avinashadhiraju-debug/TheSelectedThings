@@ -14,13 +14,16 @@ struct TheSelectedThingsApp: App {
     
     var body: some Scene {
         WindowGroup {
-            Group {
+            ZStack {
                 if mainVM.isUserLogin {
                     MainTabView()
+                        .transition(.opacity)
                 } else {
                     WelcomeView()
+                        .transition(.opacity)
                 }
             }
+            .animation(.easeInOut(duration: 0.6), value: mainVM.isUserLogin)
             .preferredColorScheme(mainVM.isDarkMode ? .dark : .light)
         }
     }
