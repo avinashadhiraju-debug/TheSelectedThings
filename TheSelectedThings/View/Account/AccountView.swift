@@ -182,6 +182,162 @@ struct AccountView: View {
                         .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
                         .padding(.horizontal, 20)
                         
+                        // 2b. The Selected Archive Group
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("THE SELECTED ARCHIVE")
+                                .font(.customfont(.bold, fontSize: 11))
+                                .foregroundColor(Color(hex: "AAAAAA"))
+                                .tracking(1.5)
+                                .padding(.horizontal, 16)
+                                .padding(.top, 16)
+                                .padding(.bottom, 10)
+                            
+                            VStack(alignment: .leading, spacing: 0) {
+                                // Our Story row
+                                NavigationLink(destination: OurStoryView()) {
+                                    HStack {
+                                        Image(systemName: "sparkles")
+                                            .foregroundColor(.primaryApp)
+                                            .font(.system(size: 16))
+                                            .frame(width: 28)
+                                        
+                                        Text("Our Story")
+                                            .font(.customfont(.semibold, fontSize: 16))
+                                            .foregroundColor(Color(hex: "F3F3F3"))
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                    }
+                                    .padding(.vertical, 14)
+                                    .padding(.horizontal, 16)
+                                }
+                                
+                                Divider()
+                                    .background(Color.white.opacity(0.05))
+                                    .padding(.horizontal, 16)
+
+                                // Lookbook row
+                                NavigationLink(destination: LookbookView()) {
+                                    HStack {
+                                        Image(systemName: "magazine.fill")
+                                            .foregroundColor(.primaryApp)
+                                            .font(.system(size: 16))
+                                            .frame(width: 28)
+                                        
+                                        Text("Lookbook")
+                                            .font(.customfont(.semibold, fontSize: 16))
+                                            .foregroundColor(Color(hex: "F3F3F3"))
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                    }
+                                    .padding(.vertical, 14)
+                                    .padding(.horizontal, 16)
+                                }
+
+                                Divider()
+                                    .background(Color.white.opacity(0.05))
+                                    .padding(.horizontal, 16)
+
+                                // Contact Us row
+                                NavigationLink(destination: ContactUsView()) {
+                                    HStack {
+                                        Image(systemName: "paperplane.fill")
+                                            .foregroundColor(.primaryApp)
+                                            .font(.system(size: 16))
+                                            .frame(width: 28)
+                                        
+                                        Text("Contact Us")
+                                            .font(.customfont(.semibold, fontSize: 16))
+                                            .foregroundColor(Color(hex: "F3F3F3"))
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                    }
+                                    .padding(.vertical, 14)
+                                    .padding(.horizontal, 16)
+                                }
+
+                                Divider()
+                                    .background(Color.white.opacity(0.05))
+                                    .padding(.horizontal, 16)
+
+                                // FAQ row
+                                NavigationLink(destination: FAQView()) {
+                                    HStack {
+                                        Image(systemName: "questionmark.circle.fill")
+                                            .foregroundColor(.primaryApp)
+                                            .font(.system(size: 16))
+                                            .frame(width: 28)
+                                        
+                                        Text("FAQ")
+                                            .font(.customfont(.semibold, fontSize: 16))
+                                            .foregroundColor(Color(hex: "F3F3F3"))
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                    }
+                                    .padding(.vertical, 14)
+                                    .padding(.horizontal, 16)
+                                }
+
+                                Divider()
+                                    .background(Color.white.opacity(0.05))
+                                    .padding(.horizontal, 16)
+
+                                // Privacy Policy row
+                                NavigationLink(destination: PrivacyPolicyView()) {
+                                    HStack {
+                                        Image(systemName: "lock.shield.fill")
+                                            .foregroundColor(.primaryApp)
+                                            .font(.system(size: 16))
+                                            .frame(width: 28)
+                                        
+                                        Text("Privacy Policy")
+                                            .font(.customfont(.semibold, fontSize: 16))
+                                            .foregroundColor(Color(hex: "F3F3F3"))
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(Color(hex: "AAAAAA"))
+                                    }
+                                    .padding(.vertical, 14)
+                                    .padding(.horizontal, 16)
+                                }
+                            }
+                        }
+                        .background(
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(Color.white.opacity(0.02))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 25)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [Color.primaryApp.opacity(0.60), Color.clear, Color.secondaryprimaryApp.opacity(0.60)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 2.29
+                                )
+                        )
+                        .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 10)
+                        .padding(.horizontal, 20)
+                        
                         // 3. About the Curators Card — dark glassmorphic
                         VStack(alignment: .leading, spacing: 14) {
                             HStack {

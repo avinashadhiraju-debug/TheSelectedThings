@@ -40,18 +40,30 @@ struct FooterView: View {
             
             // 4. About Us & Support Links
             HStack(alignment: .top, spacing: 0) {
-                FooterLinkSection(title: "ABOUT US", links: [
-                    FooterLinkItem(label: "Our Story", urlString: "https://www.selectedthings.com/story"),
-                    FooterLinkItem(label: "Lookbook", urlString: "https://www.selectedthings.com/lookbook"),
-                ])
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("ABOUT US")
+                        .font(.customfont(.bold, fontSize: 10))
+                        .foregroundColor(.primaryText)
+                        .tracking(2.0)
+                        .padding(.bottom, 2)
+                    
+                    FooterNavigationLink(label: "Our Story", destination: OurStoryView())
+                    FooterNavigationLink(label: "Lookbook", destination: LookbookView())
+                }
 
                 Spacer()
 
-                FooterLinkSection(title: "SUPPORT", links: [
-                    FooterLinkItem(label: "Contact Us", urlString: "mailto:hello@selectedthings.com"),
-                    FooterLinkItem(label: "FAQ", urlString: "https://www.selectedthings.com/faq"),
-                    FooterLinkItem(label: "Privacy Policy", urlString: "https://www.selectedthings.com/privacy"),
-                ])
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("SUPPORT")
+                        .font(.customfont(.bold, fontSize: 10))
+                        .foregroundColor(.primaryText)
+                        .tracking(2.0)
+                        .padding(.bottom, 2)
+                    
+                    FooterNavigationLink(label: "Contact Us", destination: ContactUsView())
+                    FooterNavigationLink(label: "FAQ", destination: FAQView())
+                    FooterNavigationLink(label: "Privacy Policy", destination: PrivacyPolicyView())
+                }
             }
             .padding(.horizontal, 10)
 
@@ -99,38 +111,22 @@ struct SocialIcon: View {
     }
 }
 
-// MARK: - Footer Link Section
-struct FooterLinkItem {
+// MARK: - Footer Navigation Link Helper
+struct FooterNavigationLink<Destination: View>: View {
     let label: String
-    let urlString: String
-}
-
-struct FooterLinkSection: View {
-    let title: String
-    let links: [FooterLinkItem]
+    let destination: Destination
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.customfont(.bold, fontSize: 10))
-                .foregroundColor(.primaryText)
-                .tracking(2.0)
-
-            ForEach(links, id: \.label) { item in
-                Button {
-                    let impact = UIImpactFeedbackGenerator(style: .light)
-                    impact.impactOccurred()
-                    if let url = URL(string: item.urlString) {
-                        UIApplication.shared.open(url)
-                    }
-                } label: {
-                    Text(item.label)
-                        .font(.customfont(.medium, fontSize: 12))
-                        .foregroundColor(.secondaryText)
-                }
-                .buttonStyle(.plain)
-            }
+        NavigationLink(destination: destination) {
+            Text(label)
+                .font(.customfont(.medium, fontSize: 12))
+                .foregroundColor(.secondaryText)
         }
+        .simultaneousGesture(TapGesture().onEnded {
+            let impact = UIImpactFeedbackGenerator(style: .light)
+            impact.impactOccurred()
+        })
+        .buttonStyle(.plain)
     }
 }
 
